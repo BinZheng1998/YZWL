@@ -1,3 +1,5 @@
+在小型服务器上运行 binz@10.33.44.212
+
 1.学习资料： https://github.com/hms-dbmi/hic-data-analysis-bootcamp
 
 2.所需软件：
