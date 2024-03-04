@@ -1,1 +1,1 @@
-
+1.orthofinder会得到一个文件夹，其中需要的单拷贝直系同源基因序列在 Single_Copy_Orthologue_Sequences 文件夹里，需要将所有同一个物种的同源基因合并在一起（这里使用的是merge_step1.sh和merge_step2.py）。
