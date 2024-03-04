@@ -2,7 +2,7 @@
 
 2.所需软件：
 
-bwa（-SP5M是Hi-C必须的参数）https://github.com/lh3/bwa
+bwa（-SP5M是Hi-C数据分析必须的参数）https://github.com/lh3/bwa
 
 samtools https://github.com/samtools/samtools
            
