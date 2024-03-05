@@ -3,3 +3,5 @@
 数据量：about 12Gb/samples
 
 测序方法：BGI
+
+call_variant.sh : fastq>variant
