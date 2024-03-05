@@ -4,4 +4,4 @@
 
 测序方法：BGI
 
-call_variant.sh : fastq>variant
+call_variant.sh : fastq>vcf
