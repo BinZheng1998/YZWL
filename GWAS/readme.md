@@ -4,4 +4,6 @@
 
 测序方法：BGI
 
-call_variant.sh : fastq>vcf
+20240307_v23_fastq2gvcf.sh : fastq>vcf
+
+v23代表的是胡须鸡的参考基因组
