@@ -56,7 +56,7 @@ for fastq_file in "${fastq_files[@]}"; do
     # Step 4: 对BAM文件进行排序
     echo "Step 4: Sorting BAM..."
     samtools_sort_start_time=$(date +%s)
-    samtools sort "${output_dir}/${sample}_aligned.bam" -o "${output_dir}/${sample}_sorted.bam"
+    samtools sort "${output_dir}/${sample}_aligned.bam" -f "${output_dir}/${sample}_sorted.bam"
     samtools_sort_end_time=$(date +%s)
     samtools_sort_time=$((samtools_sort_end_time - samtools_sort_start_time))
     echo "$sample,samtools sort,$samtools_sort_time" >> "$time_file"
