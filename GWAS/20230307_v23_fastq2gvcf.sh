@@ -1,4 +1,12 @@
 #!/bin/bash
+#CSUB -J zhengbin
+#CSUB -q cpu
+#CSUB -o fastq2gvcf.out
+#CSUB -e fastq2gvcf.error
+#CSUB -n 12
+#CSUB -cwd /share/home/yzwl_zhengbin/GWAS/call_snp_indel
+
+source /share/home/yzwl_zhengbin/miniconda3/bin/activate py3
 
 # 记录开始时间
 start_time=$(date +%s)
@@ -9,7 +17,7 @@ echo "Sample,Step,Time (seconds)" > "$time_file"
 
 # 输入FASTQ文件夹路径
 fastq_dir="/home/binz/GWAS_test/test_fastq"
-# 参考基因组路径
+# 参考基因组路径(这里用的是胡须鸡的参考基因组)
 reference_genome="/home/binz/ref/chicken/chicken.v23.fa"
 # Picard.jar 路径
 picard_jar="/home/binz/software/picard.jar"
