@@ -1,1 +1,10 @@
 
+
+xpclr --out ./BW_pig_xpclr_chr4 \
+    -Sa ../../metadata/BW_high.txt \
+    -Sb ../../metadata/BW_low2.txt \
+    -I ../../vcf/pig_chr4.recode.vcf \
+    --ld 0.95 \
+    --size 50000 \
+    --step 10000 \
+    --chr 4
