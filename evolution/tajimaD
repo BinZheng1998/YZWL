@@ -1,1 +1,2 @@
 
+vcftools --vcf example.vcf --TajimaD 1000 --out tajima_results
