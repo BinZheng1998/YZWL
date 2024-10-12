@@ -1,2 +1,6 @@
 
 vcftools --vcf example.vcf --TajimaD 1000 --out tajima_results
+
+vcftools --vcf input.vcf --TajimaD 1000 --out group1_results --keep group1.txt
+vcftools --vcf input.vcf --TajimaD 1000 --out group2_results --keep group2.txt
+
