@@ -1,1 +1,6 @@
 download fastq data (sra)
+
+kingfisher get -p PRJNA938179 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq.gz --check-md5sums
+kingfisher get -p PRJNA938179 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq --check-md5sums
+
+kingfisher get -r ERR13295563 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq.gz --check-md5sums
