@@ -43,3 +43,18 @@ Options:
   --input   Path to the input RDS file
   --out     Path to the output RDS file
   -h, --help  Show this help message and exit
+
+#doubletfinder
+Usage: Rscript test.R input.rds --pc-num <PC_NUM> --resolution <RES> --DoubletRate <RATE> --pN <PN> --sct <SCT> --out <OUTPUT>
+
+Arguments:
+  input.rds       The input Seurat .rds file
+  --pc-num        Number of PCs to use for dimensionality reduction (e.g., 15)
+  --resolution    Resolution for clustering (e.g., 1.0)
+  --DoubletRate   Expected doublet rate (e.g., 0.075 for 7.5%)
+  --pN            pN parameter for DoubletFinder (e.g., 0.25)
+  --sct           Use SCTransform for normalization (TRUE or FALSE)
+  --out           Output RDS file path
+
+Example:
+  Rscript test.R input.rds --pc-num 15 --resolution 1.0 --DoubletRate 0.075 --pN 0.25 --sct TRUE --out output.rds
