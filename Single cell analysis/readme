@@ -1,6 +1,7 @@
 Analysis code for Single-cell transcriptomics 
 
 Details:
+#qc
 01-qc.r for single-cell data quality control
 Usage: Rscript script.R --sample-dir <directory> --sample-name <name> --min-cells <int> --min-features <int> --percent-mito <float> --filter-mode <mode> [--min-feature-rna <int> --max-feature-rna <int> --min-feature-rna-percent <float> --max-feature-rna-percent <float> --mad-multiplier <float>]
 
@@ -20,3 +21,17 @@ Options:
 Example:
   Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode mad --mad-multiplier 2  Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode count --min-feature-rna 200 --max-feature-rna 5000
   Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode percent --min-feature-rna-percent 0.1 --max-feature-rna-percent 0.9
+
+
+#normalize
+Usage: Rscript 02_normalize.r --rds <input.rds> --method <sct/NormalizeData> --vars-to-regress <vars> --out <output.rds>
+
+Options:
+  --rds              Input RDS file containing the Seurat object
+  --method           Normalization method to use: 'sct' for SCTransform or 'NormalizeData' for LogNormalize
+  --vars-to-regress  (Optional) Variables to regress out, e.g. percent.mt nCount_RNA nFeature_RNA
+  --out              Output RDS file to save the processed Seurat object
+  -h, --help         Show this help message and exit
+
+Example:
+  Rscript 02_normalize.r --rds input.rds --method sct --vars-to-regress percent.mt nCount_RNA nFeature_RNA --out output.rds
