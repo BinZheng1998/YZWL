@@ -1,2 +1,4 @@
 Analysis code for Single-cell transcriptomics 
+
+Details:
 01-qc.r for single-cell data quality control
