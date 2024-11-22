@@ -35,3 +35,11 @@ Options:
 
 Example:
   Rscript 02_normalize.r --rds input.rds --method sct --vars-to-regress percent.mt nCount_RNA nFeature_RNA --out output.rds
+
+#cellcycle
+Usage: cellcycle.r --input INPUT_FILE --out OUTPUT_FILE [options]
+
+Options:
+  --input   Path to the input RDS file
+  --out     Path to the output RDS file
+  -h, --help  Show this help message and exit
