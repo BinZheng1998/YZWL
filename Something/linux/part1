@@ -1,0 +1,9 @@
+1、查找后台命令的父进程
+ps -o pid,ppid,cmd -p <PID>
+例如，假设你想找 PID 为 1234 的进程的父进程：ps -o pid,ppid,cmd -p 1234
+结果如下：
+  PID  PPID CMD
+ 1234  1000 /usr/bin/python
+在这个例子中，1234 是目标进程的 PID，1000 是该进程的父进程 PID（PPID）。
+杀死父进程:kill
+
