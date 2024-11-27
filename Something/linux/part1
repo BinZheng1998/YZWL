@@ -7,3 +7,5 @@ ps -o pid,ppid,cmd -p <PID>
 在这个例子中，1234 是目标进程的 PID，1000 是该进程的父进程 PID（PPID）。
 杀死父进程:kill
 
+2、查找特定软件运行的命令（或者特定字符）
+ps aux | grep bwa
