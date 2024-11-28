@@ -9,3 +9,6 @@ ps -o pid,ppid,cmd -p <PID>
 
 2、查找特定软件运行的命令（或者特定字符）
 ps aux | grep bwa
+
+3、查找当前文件夹及其子文件夹下的以rds结尾文件的绝对路径
+find "$(pwd)" -type f -name "*.rds"
