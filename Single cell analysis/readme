@@ -3,23 +3,24 @@ Analysis code for Single-cell transcriptomics
 Details:
 #qc
 01-qc.r for single-cell data quality control
-Usage: Rscript script.R --input <path> --sample-name <name> --min-cells <int> --min-features <int> --percent-mito <float> [--min-feature-rna <int> --max-feature-rna <int> --min-feature-rna-percent <float> --max-feature-rna-percent <float> --min-mad-multiplier <float> --max-mad-multiplier <float>]
+Usage: Rscript script.R --sample-dir <directory> --sample-name <name> --min-cells <int> --min-features <int> --percent-mito <float> --filter-mode <mode> [--min-feature-rna <int> --max-feature-rna <int> --min-feature-rna-percent <float> --max-feature-rna-percent <float> --mad-multiplier <float>]
 
 Options:
-  --input                    Directory containing the 10X Genomics data (required)
+  --sample-dir               Directory containing the 10X Genomics data (required)
   --sample-name              Name of the sample/project (required)
   --min-cells                Minimum number of cells expressing a gene (required)
   --min-features             Minimum number of genes detected in a cell (required)
   --percent-mito             Maximum percentage of mitochondrial genes allowed for quality control (required)
+  --filter-mode              Filtering mode: 'count', 'percent', or 'mad' (required)
   --min-feature-rna          Minimum number of features (genes) for 'count' mode
   --max-feature-rna          Maximum number of features (genes) for 'count' mode
   --min-feature-rna-percent  Minimum feature percentage for 'percent' mode (0-1)
   --max-feature-rna-percent  Maximum feature percentage for 'percent' mode (0-1)
-  --min-mad-multiplier       Minimum MAD multiplier for filtering
-  --max-mad-multiplier       Maximum MAD multiplier for filtering
+  --mad-multiplier           Multiplier for MAD-based filtering thresholds for 'mad' mode
 
 Example:
-  Rscript script.R --input /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --min-mad-multiplier 2 --max-mad-multiplier 3
+  Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode mad --mad-multiplier 2  Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode count --min-feature-rna 200 --max-feature-rna 5000
+  Rscript script.R --sample-dir /path/to/data --sample-name sample1 --min-cells 3 --min-features 200 --percent-mito 5 --filter-mode percent --min-feature-rna-percent 0.1 --max-feature-rna-percent 0.9
 
 #normalize
 Usage: Rscript 02_normalize.r --rds <input.rds> --method <sct/NormalizeData> --vars-to-regress <vars> --out <output.rds>
