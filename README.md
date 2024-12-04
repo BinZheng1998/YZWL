@@ -1,2 +1,2 @@
-# Yazhouwan-national-lab
+# Yazhouwan-lab
 ## Zhengbin
