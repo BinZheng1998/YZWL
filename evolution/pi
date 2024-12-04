@@ -1,0 +1,13 @@
+vcftools \
+    --gzvcf merged_output.vcf.gz \
+    --window-pi 10000 \
+    --window-pi-step 5000 \
+    --keep wild.txt \
+    --out wild_10kbwindow_5kbstep
+
+vcftools \
+    --gzvcf merged_output.vcf.gz \
+    --window-pi 10000 \
+    --window-pi-step 5000 \
+    --keep domestic.txt \
+    --out domestic_10kbwindow_5kbstep
