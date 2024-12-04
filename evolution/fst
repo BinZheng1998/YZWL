@@ -1,0 +1,7 @@
+vcftools \
+    --gzvcf merged_output.vcf.gz \
+    --weir-fst-pop domestic.txt \
+    --weir-fst-pop wild.txt \
+    --fst-window-size 10000 \
+    --fst-window-step 5000 \
+    --out 10kbwindow_5kbstep
