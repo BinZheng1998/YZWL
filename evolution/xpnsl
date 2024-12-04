@@ -1,0 +1,22 @@
+for i in {1..38}; do
+  ~/software/selscan-2.0.3/bin/linux/selscan-2.0.3 \
+    --xpnsl \
+    --vcf  domestic/domestic_${i}.recode.vcf \
+    --vcf-ref wild/wild_${i}.recode.vcf \
+    --threads 10 \
+    --out chr${i}
+done
+
+for i in {1..38}
+do
+  input_file="chr${i}.xpnsl.out"
+
+  ~/software/selscan-2.0.3/bin/linux/norm --xpnsl --files "$input_file" --bp-win --winsize 5000
+
+  echo "Processed $input_file"
+done
+
+
+for i in {1..38}; do
+    sed "s/^/chr${i}\t/" chr${i}.xpnsl.out.norm.5kb.windows > chr${i}.xpnsl.out.norm.5kb.windows.txt
+done
