@@ -11,3 +11,9 @@ vcftools \
     --window-pi-step 5000 \
     --keep domestic.txt \
     --out domestic_10kbwindow_5kbstep
+
+ROD (reduction of diversity) 一般通过比较野生群体和驯化群体（或其他参照群体）的核苷酸多样性计算得来，其计算公式可以简单表示为：
+
+ROD = π(野生群体) / π(驯化群体)
+
+这个公式的结果是一个比值，表明了驯化种群相对于野生种群的核苷酸多样性减少程度。ROD值越大，表明驯化群体的核苷酸多样性相对降低的越多，可能受到的选择压力越大。
