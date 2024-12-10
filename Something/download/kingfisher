@@ -1,7 +1,16 @@
 download fastq data (sra)
 #https://resbang.com/thread-225-1-1.html
-
+##下载整个Bioproject
 kingfisher get -p PRJNA938179 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq.gz --check-md5sums
 kingfisher get -p PRJNA938179 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq --check-md5sums
-
+##下载单个样本
 kingfisher get -r ERR13295563 -m aws-http prefetch aws-cp gcp-cp ena-ascp ena-ftp -f fastq.gz --check-md5sums
+
+##下载多个样本
+kingfisher get --run-identifiers-list SRR_list.csv -m ena-ascp ena-ftp prefetch --download-threads 10 --check-md5sums 1>down_srr_list.log 2>&1
+
+-p ：批量下载BioProject IDs 中的所有数据
+-m ：指定下载源 ena-ascp、ena-ftp、prefetch、aws-http、aws-cp、gcp-cp 等
+-r ：下载某个确定的SRA数据 
+--run-identifiers-list ：SRR样本列表文件，单列SRR号
+--download-threads -t :  指定线程数
