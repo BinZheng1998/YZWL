@@ -1,3 +1,7 @@
+for i in {1..38} Z W MT; do
+    vcftools --vcf chicken_bw_low.recode.vcf --chr "${i}" --recode --out "chicken_bw_low_chr${i}"
+done
+
 for i in {1..38}; do
   ~/software/selscan-2.0.3/bin/linux/selscan-2.0.3 \
     --xpehh \
