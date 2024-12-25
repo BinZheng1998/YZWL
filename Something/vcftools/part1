@@ -1,2 +1,16 @@
 #从vcf文件中提取多个样本，每个样本一行；如果是vcf.gz，则使用--gzvcf
 vcftools --vcf input.vcf --keep samples_to_keep.txt --recode --out extracted_samples
+
+#循环提取多个染色体的数据
+input_vcf="input.vcf"
+
+# 循环提取染色体 1 到 22 的数据
+for chr in {1..22} Z W; do
+    # 输出文件名，使用染色体编号作为前缀
+    output_vcf="chr${chr}_data.vcf"
+    
+    # 提取该染色体的数据
+    vcftools --vcf $input_vcf --chr "chr$chr" --recode --out "chr${chr}_data"
+    
+    # 输出文件名为 "chr${chr}_data.recode.vcf"
+done
