@@ -1,0 +1,9 @@
+#简化vcf文件
+bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o snp.simply.vcf.gz
+
+#修改vcf文件的染色体名
+#左侧为原始染色体名，右侧为替换后的
+chr1 1
+chr2 2
+chr3 3
+bcftools annotate --rename-chrs chr_name_change.txt cohart.filter.vcf.gz | bgzip -c > cohart.filter.nochr.vcf.gz
