@@ -39,4 +39,4 @@ chr10	20001	25001	3	-1	-1	-1	-1	NA	NA
 chr10	25001	30001	12	0	0	1	5	-1.331	-1.53136
 
 #plot
-![xpehh](https://github.com/binzhengbin/YZWL/blob/main/evolution/R/manhattan/png/XPEHH.png "xpehh")
+![xpehh](evolution/R/manhattan/png/FST.png)
