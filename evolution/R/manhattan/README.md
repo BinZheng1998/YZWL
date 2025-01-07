@@ -1,4 +1,4 @@
-r code for manhattan plot
+# r code for manhattan plot
 
 #fst
 #Using vcftools to generate fst with window and step
