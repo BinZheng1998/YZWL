@@ -1,0 +1,14 @@
+#using
+python extract.py input.txt ref.gff 0kb ./output.gene 
+
+#input.txt
+chr1    300001  315000
+chr1    355001  410000
+chr1    705001  740000
+chr1    1990001 2000000
+chr1    2080001 2090000
+chr1    2245001 2280000
+chr1    2375001 2445000
+chr1    3270001 3285000
+chr1    3615001 3630000
+chr1    3735001 3745000
