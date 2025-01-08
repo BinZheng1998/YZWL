@@ -1,10 +1,9 @@
-setwd('E:/02-群体进化/02-鸡/phased_breed/BW_selection/plot/')
 library(readxl)
 library(dplyr)
 library(tidyverse)
 
-piH <- read.table("../pi/chicken_BW_pi_high_10kbwindow_5kb_step.windowed.pi",header = T)
-piL <- read.table('../pi/chicken_BW_pi_low_10kbwindow_5kb_step.windowed.pi',header = T)
+piH <- read.table("pi_high_10kbwindow_5kb_step.windowed.pi",header = T)
+piL <- read.table('pi_low_10kbwindow_5kb_step.windowed.pi',header = T)
 
 pi <- piL%>% 
   left_join(piH,by=c("CHROM","BIN_START","BIN_END")) %>% 
@@ -100,4 +99,4 @@ p<-ggplot(Fst_pos, aes(x = BPcum, y = log2pi)) +
         panel.background = element_blank()) + 
   labs(x = "Chromosome")
 p
-ggsave(p,filename = 'chicken_BW_PI.png',dpi = 500,height = 4,width = 16)
+ggsave(p,filename = 'BW_PI.png',dpi = 500,height = 4,width = 16)
