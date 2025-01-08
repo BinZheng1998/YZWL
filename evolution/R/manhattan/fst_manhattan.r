@@ -1,9 +1,8 @@
-setwd('E:/02-群体进化/02-鸡/phased_breed/BW_selection/plot/')
 library(qqman)
 library(CMplot)
 library(readxl)
 
-Fstfile <- read.table('../fst/chicken_BW_fst_10kbwindow_5kbstep.windowed.weir.fst',header = T,stringsAsFactors = F)
+Fstfile <- read.table('fst_10kbwindow_5kbstep.windowed.weir.fst',header = T,stringsAsFactors = F)
 Fstfile2 <- Fstfile %>% filter(CHROM != 'Z')
 Fstfile3 <- Fstfile2 %>% filter(CHROM != 'W')
 Fstfile4 <- Fstfile3 %>% filter(CHROM != 'MT')
@@ -98,4 +97,4 @@ p<-ggplot(Fst_pos, aes(x = BPcum, y = zFST)) +
         panel.background = element_blank()) + 
   labs(x = "Chromosome")
 p
-ggsave(p,filename = 'chicken_BW_FST.png',dpi = 500,height = 4,width = 16)
+ggsave(p,filename = 'FST.png',dpi = 500,height = 4,width = 16)
