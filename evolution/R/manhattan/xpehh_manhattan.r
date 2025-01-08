@@ -1,10 +1,7 @@
-setwd('E:/02-群体进化/02-鸡/selection_BW/10kb_window_5kb_step/plot/')
-library(qqman)
-library(CMplot)
 library(readxl)
 library(dplyr)
 library(tidyverse)
-Fstfile <- read.table('../xpehh/chicken_BW_xpehh_5kb.txt',header = F,stringsAsFactors = F)
+Fstfile <- read.table('xpehh_5kb.txt',header = F,stringsAsFactors = F)
 Fstfile <- Fstfile[Fstfile$V1 != "chrZ",]
 Fstfile <- Fstfile[Fstfile$V1 != "chrW",]
 Fstfile <- Fstfile[Fstfile$V1 != "chrMT",]
@@ -95,4 +92,4 @@ p<-ggplot(Fst_pos, aes(x = BPcum, y = XPEHH)) +
         panel.background = element_blank()) + 
   labs(x = "Chromosome")
 p
-ggsave(p,filename = 'chicken_BW_XPEHH.png',dpi = 500,height = 4,width = 16)
+ggsave(p,filename = 'XPEHH.png',dpi = 500,height = 4,width = 16)
