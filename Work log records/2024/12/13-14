@@ -1,0 +1,60 @@
+ 代码1
+#!/bin/bash
+#CSUB -J GWAS      
+#CSUB -q c01            
+#CSUB -o %J.out         
+#CSUB -e %J.error        
+#CSUB -n 16              
+#CSUB -cwd /share/org/YZWL/yzwl_zhengbin/project/01-gwas/script
+
+DATA_DIR="/share/org/YZWL/yzwl_zhengbin/project/01-gwas/00-data/yunnan/01RawData/CH"
+JOB_DIR="/share/org/YZWL/yzwl_zhengbin/project/01-gwas/script/gwas_scripts"
+OUTPUT_DIR="/share/org/YZWL/yzwl_zhengbin/project/01-gwas/01-result"
+
+mkdir -p $JOB_DIR
+mkdir -p $OUTPUT_DIR
+
+for file1 in ${DATA_DIR}/*_1.fq.gz; do
+
+    basename=$(basename "$file1" _1.fq.gz)
+
+    file2="${DATA_DIR}/${basename}_2.fq.gz"
+
+    job_script="${JOB_DIR}/${basename}_gwas.sh"
+
+    echo "#!/bin/bash" > $job_script
+    echo "#CSUB -J gwas_${basename}" >> $job_script  
+    echo "#CSUB -q c01" >> $job_script  
+    echo "#CSUB -o ${JOB_DIR}/${basename}.out" >> $job_script  
+    echo "#CSUB -e ${JOB_DIR}/${basename}.err" >> $job_script  
+    echo "#CSUB -n 16" >> $job_script  
+    echo "#CSUB -R span[hosts=1]" >> $job_script
+    echo "#CSUB -cwd $OUTPUT_DIR" >> $job_script  
+    echo "" >> $job_script
+    echo "source /share/org/YZWL/yzwl_zhengbin/software/miniconda3/bin/activate" >> $job_script
+    echo "conda activate gwas" >> $job_script
+    echo "" >> $job_script
+
+    echo "sh /share/org/YZWL/yzwl_zhengbin/project/01-gwas/script/fastq2gvcf.sh \\" >> $job_script
+    echo "${file1} ${file2} 2>${OUTPUT_DIR}/${basename}.gwas.log " >> $job_script
+
+done
+
+
+ 代码2
+#!/bin/bash
+#CSUB -J gwas_CH1
+#CSUB -q c01
+#CSUB -o /share/org/YZWL/yzwl_zhengbin/project/01-gwas/script/gwas_scripts/CH1.out
+#CSUB -e /share/org/YZWL/yzwl_zhengbin/project/01-gwas/script/gwas_scripts/CH1.err
+#CSUB -n 16
+#CSUB -R span[hosts=1]
+#CSUB -cwd /share/org/YZWL/yzwl_zhengbin/project/01-gwas/01-result
+
+source /share/org/YZWL/yzwl_zhengbin/software/miniconda3/bin/activate
+conda activate gwas
+
+sh /share/org/YZWL/yzwl_zhengbin/project/01-gwas/script/fastq2gvcf.sh \
+/share/org/YZWL/yzwl_zhengbin/project/01-gwas/00-data/yunnan/01RawData/CH/CH1_1.fq.gz \
+/share/org/YZWL/yzwl_zhengbin/project/01-gwas/00-data/yunnan/01RawData/CH/CH1_2.fq.gz \
+2>/share/org/YZWL/yzwl_zhengbin/project/01-gwas/01-result/CH1.gwas.log
