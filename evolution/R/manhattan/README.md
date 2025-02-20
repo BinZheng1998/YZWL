@@ -4,7 +4,9 @@
 ### fst
 #Using vcftools to generate fst with window and step
 input fst file  
-CHROM	BIN_START	BIN_END	N_VARIANTS	WEIGHTED_FST	MEAN_FST<br>
+
+|CHROM	|BIN_START	|BIN_END	|N_VARIANTS	|WEIGHTED_FST	|MEAN_FST|<br>
+| --- | --- | --- | --- | --- | ---| --- |
 1	1	50000	293	0.0162935	0.0135958<br>
 1	10001	60000	277	0.0158246	0.0131814<br>
 1	20001	70000	178	0.019789	0.0163616<br>
