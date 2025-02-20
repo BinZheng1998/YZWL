@@ -1,6 +1,7 @@
 world map
 
 #input data
+
 Breed	Area	Region	Total_Count	Latitude	Longitude
 Angler_Sattleschwein	Germany	Western Europe	2	54.28	9.3
 Anqing_Six-end-white	Anhui	East Asia	20	30.31	117.06
