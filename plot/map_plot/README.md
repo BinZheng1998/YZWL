@@ -14,6 +14,7 @@ world map
 |British_Saddleback	|England	|Western Europe	|2	|51.3	|-0.07  |
 |Casertana	|Italy	|Southern Europe	|2	|40.54	|14.55  |
 |Chato_Murciano	|Spain	|Southern Europe	|2	|37.59	|1.7  |
+| ... | ... | ... | ... | ... | ... |
 
 #plot
 
