@@ -16,6 +16,7 @@ world map
 |Chato_Murciano	|Spain	|Southern Europe	|2	|37.59	|1.7  |
 | ... | ... | ... | ... | ... | ... |
 
+
 #plot
 
 ![image](https://github.com/binzhengbin/YZWL/blob/main/plot/map_plot/pig_map.png)
