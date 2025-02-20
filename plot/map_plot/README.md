@@ -1,6 +1,6 @@
-world map
+##world map
 
-#input data
+##input data
 
 |Breed	| Area	| Region	| Total_Count	| Latitude	| Longitude |
 | --- | --- | --- | --- | --- | --- |
@@ -17,6 +17,6 @@ world map
 | ... | ... | ... | ... | ... | ... |
 
 
-#plot
+##plot
 
 ![image](https://github.com/binzhengbin/YZWL/blob/main/plot/map_plot/pig_map.png)
