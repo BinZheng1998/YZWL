@@ -2,9 +2,8 @@
 ## r code for manhattan plot
 
 ### fst
-#Using vcftools to generate fst with window and step
+#Using vcftools to generate fst with window and step  
 input fst file  
-
 |CHROM	|BIN_START	|BIN_END	|N_VARIANTS	|WEIGHTED_FST	|MEAN_FST|
 | --- | --- | --- | --- | --- | ---| 
 |1	|1	|50000	|293	|0.0162935	|0.0135958|
