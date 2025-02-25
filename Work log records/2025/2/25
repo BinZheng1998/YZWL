@@ -1,0 +1,114 @@
+setwd('E:/02-群体进化/02-鸡/phased_breed/BW_selection/result/down5_top95/')
+
+fst <-  read.table('../chicken_BW_fst_95%_0kb_genes.txt',sep = '\t',header = T)
+genes_list <- strsplit(fst[[5]], ",")
+all_genes <- unlist(genes_list)
+fst_unique_genes <- unique(all_genes)
+fst_genes <- as.data.frame(fst_unique_genes)
+
+pi <-  read.table('../chicken_BW_pi_merged_5%_95%_genes.txt',sep = '\t',header = T)
+genes_list <- strsplit(pi[[5]], ",")
+all_genes <- unlist(genes_list)
+pi_unique_genes <- unique(all_genes)
+pi_genes <- as.data.frame(pi_unique_genes)
+
+xpehh <-  read.table('../chicken_BW_xpehh_merged_5%_95%_genes.txt',sep = '\t',header = T)
+genes_list <- strsplit(xpehh[[5]], ",")
+all_genes <- unlist(genes_list)
+xpehh_unique_genes <- unique(all_genes)
+xpehh_genes <- as.data.frame(xpehh_unique_genes)
+
+xpnsl <-  read.table('../chicken_BW_xpnsl_merged_5%_95%_genes.txt',sep = '\t',header = T)
+genes_list <- strsplit(xpnsl[[5]], ",")
+all_genes <- unlist(genes_list)
+xpnsl_unique_genes <- unique(all_genes)
+xpnsl_genes <- as.data.frame(xpnsl_unique_genes)
+
+#################################################
+#######为了计算区间长度
+df <- rbind(fst,pi,xpehh,xpnsl)
+#df2 <- df[df$genes!="",]
+df3 <- df[,c(1,2,3)]
+merge_intervals <- function(df, threshold) {
+  colnames(df) <- c("chromosome", "start", "end")
+  
+  df <- df[order(df$chromosome, df$start), ]
+  merged <- data.frame(chromosome = character(), start = integer(), end = integer())
+  
+  current_row <- df[1, ]
+  
+  for (i in 2:nrow(df)) {
+    if (df$chromosome[i] == current_row$chromosome &&
+        df$start[i] <= current_row$end + threshold) {
+      current_row$end <- max(current_row$end, df$end[i])
+    } else {
+      merged <- rbind(merged, current_row)
+      current_row <- df[i, ]
+    }
+  }
+  merged <- rbind(merged, current_row)
+  
+  return(merged)
+}
+df4 <- merge_intervals(df3, 0)
+df4$length <- df4$end-df4$start
+df4$length <- ifelse(substr(as.character(df4$length), nchar(as.character(df4$length)), nchar(as.character(df4$length))) == "9", 
+                     df4$length + 1, 
+                     df4$length)
+sum(df4$length)
+########################################################
+
+
+all <- Reduce(intersect,list(fst_genes$fst_unique_genes,
+                             pi_genes$pi_unique_genes,
+                             xpehh_genes$xpehh_unique_genes,
+                             xpnsl_genes$xpnsl_unique_genes))
+all
+
+max_length <- max(length(fst_genes$fst_unique_genes), length(pi_genes$pi_unique_genes), 
+                  length(xpehh_genes$xpehh_unique_genes), length(xpnsl_genes$xpnsl_unique_genes))
+
+# 填充函数
+fill_vector <- function(v, n) {
+  length(v) <- n
+  v[is.na(v)] <- NA
+  return(v)
+}
+
+# 填充短向量
+fst_padded <- fill_vector(fst_genes$fst_unique_genes, max_length)
+pi_padded <- fill_vector(pi_genes$pi_unique_genes, max_length)
+xpehh_padded <- fill_vector(xpehh_genes$xpehh_unique_genes, max_length)
+xpnsl_padded <- fill_vector(xpnsl_genes$xpnsl_unique_genes, max_length)
+
+
+matrix_result <- cbind(fst_padded, pi_padded, xpehh_padded, xpnsl_padded)
+df <- data.frame(matrix_result)
+colnames(df) <- c('Fst','Pi','XPEHH','XPNSL')
+library(UpSetR)
+upset(fromList(df),
+      order.by = 'freq',
+      sets.x.label = 'Gene Numbers',
+      mainbar.y.label = 'Gene Intersections',
+      text.scale = c(2,2,2,2,2,2),
+      set_size.scale_max = 7000,
+      point.size =3,
+      #mb.ratio = c(0.5,0.5),
+      #line.size = 1,
+      main.bar.color = '#4292c6',
+      sets.bar.color = '#F7941D',
+      matrix.color = '#4292c6')
+
+
+find_shared_genes <- function(data, min_overlap = 3) {
+  gene_sets <- apply(data, 2, unique)
+  all_genes <- unlist(gene_sets)
+  gene_freq <- table(all_genes)
+  shared_genes <- names(gene_freq[gene_freq >= min_overlap])
+  return(shared_genes)
+}
+genes_in_3_columns <- find_shared_genes(df, min_overlap = 3)
+#3 methods overlap gene
+write.table(genes_in_3_columns,'down5_top95_0kb_3method_overlap_gene.txt',row.names = F,sep = '\t')
+#4 methods overlap gene
+write.table(all,'down5_top95_0kb_4method_overlap_gene.txt',row.names = F,sep = '\t')
