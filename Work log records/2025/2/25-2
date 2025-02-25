@@ -1,0 +1,32 @@
+#!/bin/bash
+FST="fst.bed"
+PI="pi.bed"
+XPEHH="xpehh.bed"
+XPNSL="xpnsl.bed"
+
+mkdir -p tmp
+
+cat "$FST" "$PI" "$XPEHH" "$XPNSL" | sort -k1,1 -k2,2n > tmp/all_sorted.bed
+
+bedtools merge -i tmp/all_sorted.bed > tmp/merged_all.bed
+
+bedtools multiinter -i "$FST" "$PI" "$XPEHH" "$XPNSL" -header > tmp/multiinter_result.bed
+
+awk 'NR==1 || $4 >= 3' tmp/multiinter_result.bed > tmp/multiinter_3plus.bed
+
+bedtools intersect -a tmp/merged_all.bed -b tmp/multiinter_3plus.bed -wa | \
+sort -k1,1 -k2,2n | uniq > tmp/merged_3plus.bed
+
+echo "Merged regions with at least 3 overlapping methods:" > final_result.txt
+while read -r chr start end; do
+    methods=$(bedtools intersect -a <(echo -e "$chr\t$start\t$end") -b "$FST" "$PI" "$XPEHH" "$XPNSL" -wa -wb | \
+              cut -f4 | sort | uniq | tr '\n' ',' | sed 's/,$//')
+    method_count=$(echo "$methods" | tr ',' '\n' | wc -l)
+    if [ "$method_count" -ge 3 ]; then
+        echo -e "$chr\t$start\t$end\t$methods" >> final_result.txt
+    fi
+done < tmp/merged_3plus.bed
+
+cat final_result.txt
+
+rm -r tmp
