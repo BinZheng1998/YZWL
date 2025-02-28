@@ -1,0 +1,51 @@
+setwd('E:/01-时空-3D/7.STRG基因注释/')
+library(readxl)
+df <- read_excel('2024-11-18-鸡胚胎单细胞数据差异基因列表及注释注释.xlsx',sheet = 2)
+res1 <- grepl("STRG",df$gene)
+results1 <- df$gene[res1]
+
+df2 <- read_excel('2024-11-18-鸡胚胎单细胞数据差异基因列表及注释注释.xlsx',sheet = 4)
+res2 <- grepl("STRG",df2$gene)
+results2 <- df2$gene[res2]
+
+df3 <- read_excel('2024-11-18-鸡胚胎单细胞数据差异基因列表及注释注释.xlsx',sheet = 8)
+res3 <- grepl("STRG",df3$gene)
+results3 <- df3$gene[res3]
+
+
+
+
+df4 <- read.csv('../7.STRG基因注释/2025-01-08-鸡胚胎时空组注释_Top50_E2.5.merge.sorted_gene.csv')
+res4 <- grepl("STRG",df4$gene)
+results4 <- df4$gene[res4]
+
+df5 <- read.csv('../7.STRG基因注释/2025-01-08-鸡胚胎时空组注释_Top50_E3.5.merge.sorted_gene.csv')
+res5 <- grepl("STRG",df5$gene)
+results5 <- df5$gene[res5]
+
+df6 <- read.csv('../7.STRG基因注释/E4.5_sp.merge.rs1.5.allmarker.top50(1).csv')
+res6 <- grepl("STRG",df6$gene)
+results6 <- df6$gene[res6]
+
+
+df7 <- read.csv('../2.空间数据-注释/瓢鸡空间组/瓢鸡空间组/E3.5-P.Spatial.rs1.0.allmarker.top50.csv')
+res7 <- grepl("STRG",df7$gene)
+results7 <- df7$gene[res7]
+
+df8 <- read.csv('../2.空间数据-注释/瓢鸡空间组/瓢鸡空间组/E4.5-P.Spatial.rs1.0.allmarker.top50.csv')
+res8 <- grepl("STRG",df8$gene)
+results8 <- df8$gene[res8]
+
+df9 <- read_excel('../3.单细胞-注释/瓢鸡/2025-01-02-瓢鸡单细胞差异基因及注释.xlsx',sheet = 1)
+res9 <- grepl("STRG",df9$gene)
+results9 <- df9$gene[res9]
+
+df10 <- read_excel('../3.单细胞-注释/瓢鸡/2025-01-02-瓢鸡单细胞差异基因及注释.xlsx',sheet = 3)
+res10 <- grepl("STRG",df10$gene)
+results10 <- df10$gene[res10]
+
+STRG <- c(results1,results2,results3,results4,results5,results6,results7,results8,results9,results10)
+STRG <- unique(STRG)
+STRG
+# 
+write.csv(STRG,"top50_STRG.csv",row.names = F)
