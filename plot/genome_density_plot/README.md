@@ -16,3 +16,6 @@ input2
 |chr1  |200044509| 1  |  
 |chr2  |152127819 |2 |   
 |chr3  |112377238 |3|
+
+example
+![image](https://github.com/binzhengbin/YZWL/blob/main/plot/genome_density_plot/chicken_selecetion_fst.png)
