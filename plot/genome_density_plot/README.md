@@ -1,6 +1,7 @@
 input1
 
-chr    start      end value
+|chr    |start      |end |value|
+| ---
 chr1   460001   470000     1
 chr1  1060001  1070000     1
 chr1  1240001  1295000     1
