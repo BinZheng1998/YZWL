@@ -18,4 +18,4 @@ input2
 |chr3  |112377238 |3|
 
 example
-![image](https://github.com/binzhengbin/YZWL/blob/main/plot/genome_density_plot/chicken_selecetion_fst.png)
+![image](https://github.com/binzhengbin/YZWL/blob/main/plot/genome_density_plot/chicken_selection_fst.png)
