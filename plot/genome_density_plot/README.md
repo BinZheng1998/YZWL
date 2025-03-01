@@ -11,7 +11,8 @@ input1
 
 input2
 
-chr      length y_pos
-chr1  200044509 1    
-chr2  152127819 2    
-chr3  112377238 3
+|chr      |length |y_pos|
+| --- | --- | --- |
+|chr1  |200044509| 1  |  
+|chr2  |152127819 |2 |   
+|chr3  |112377238 |3|
