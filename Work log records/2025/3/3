@@ -1,0 +1,64 @@
+setwd('E:/02-群体进化/07-结果/20250304-加权方法筛选区间/')
+library(tidyverse)
+#fst
+fst <- read.table('E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top5/fst/chicken_fst_10kbwindow_5kbstep.windowed.weir.fst',header = T)
+fst$WEIGHTED_FST[fst$WEIGHTED_FST < 0] <- 0
+fst <- fst[fst$CHROM != "Z",]
+fst <- fst[fst$CHROM != "W",]
+fst <- fst[fst$CHROM != "MT",]
+fst <- fst[,c(1,2,3,5)]
+fst$CHROM <- paste("chr",fst$CHROM,sep = '')
+fst$scale_fst <- scale(fst$WEIGHTED_FST)
+
+#pi
+pi_W <- read_tsv("E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top5/pi/chicken_pi_wild_10kbwindow_5kb_step.windowed.pi")
+pi_D <- read_tsv('E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top5/pi/chicken_pi_domestic_10kbwindow_5kb_step.windowed.pi')
+
+pi <- pi_D%>% 
+  left_join(pi_W,by=c("CHROM","BIN_START","BIN_END")) %>% 
+  dplyr::rename(pi_D=PI.x, pi_W=PI.y)%>%
+  mutate(WVSD=pi_W/pi_D,
+         DVSW=pi_D/pi_W)
+
+pi <- pi[pi$CHROM != "Z",]
+pi <- pi[pi$CHROM != "W",]
+pi <- pi[pi$CHROM != "MT",]
+pi <- pi[,c(1,2,3,8)]
+colnames(pi)[4] <- "PI_ratio"
+pi$CHROM <- paste("chr",pi$CHROM,sep = '')
+pi$scale_pi <- scale(pi$PI_ratio)
+
+#xpehh
+xpehh <- read.table('E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top5/xpehh/chicken_xpehh_10kb.txt')
+xpehh <- xpehh[xpehh$V1 != "chrZ",]
+xpehh <- xpehh[xpehh$V1 != "chrW",]
+xpehh <- xpehh[xpehh$V1 != "chrMT",]
+
+xpehh$V9[is.na(xpehh$V9)] <- 0
+xpehh$V10[is.na(xpehh$V10)] <- 0
+xpehh <- xpehh %>% mutate(XPEHH = rowMeans(select(., V9, V10), na.rm = TRUE))
+xpehh <- xpehh[,c(1,2,3,11)]
+colnames(xpehh) <- c("CHROM","BIN_START","BIN_END","XPEHH")
+xpehh$BIN_END <- xpehh$BIN_END-1
+xpehh$scale_xpehh <- scale(xpehh$XPEHH)
+
+#xpnsl
+xpnsl <- read.table('E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top5/xpnsl/chicken_xpnsl_10kb.txt')
+xpnsl <- xpnsl[xpnsl$V1 != "chrZ",]
+xpnsl <- xpnsl[xpnsl$V1 != "chrW",]
+xpnsl <- xpnsl[xpnsl$V1 != "chrMT",]
+
+xpnsl$V9[is.na(xpnsl$V9)] <- 0
+xpnsl$V10[is.na(xpnsl$V10)] <- 0
+xpnsl <- xpnsl %>% mutate(XPNSL = rowMeans(select(., V9, V10), na.rm = TRUE))
+xpnsl <- xpnsl[,c(1,2,3,11)]
+colnames(xpnsl) <- c("CHROM","BIN_START","BIN_END","XPNSL")
+xpnsl$BIN_END <- xpnsl$BIN_END-1
+xpnsl$scale_xpnsl <- scale(xpnsl$XPNSL)
+
+df1 <- merge(fst,pi,by = c("CHROM","BIN_START","BIN_END"))
+df2 <- merge(df1,xpehh,by = c("CHROM","BIN_START","BIN_END"))
+df3 <- merge(df2,xpnsl,by = c("CHROM","BIN_START","BIN_END"))
+
+df3$score <- 0.25*df3$scale_fst+0.25*df3$scale_pi+0.25*df3$scale_xpehh+0.25*df3$scale_xpnsl
+df3$score2 <- 0.3*df3$WEIGHTED_FST+0.3*df3$PI_ratio+0.2*df3$XPEHH+0.2*df3$XPNSL
