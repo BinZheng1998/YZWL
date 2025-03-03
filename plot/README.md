@@ -7,3 +7,4 @@ R script for plot
 ![image](https://github.com/binzhengbin/YZWL/blob/main/plot/map_plot/pig_map.png)
 
 # genome density plot
+![image](https://github.com/binzhengbin/YZWL/blob/main/plot/genome_density_plot/chicken_selection_fst.png)
