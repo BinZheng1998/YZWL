@@ -1,11 +1,11 @@
 recluster subcluster
 
 
-usage: 20250308_recluster.r [-h] --input-rds INPUT_RDS
-                            [--output-dir OUTPUT_DIR] [--name NAME]
-                            [--cluster-id CLUSTER_ID] [--batch BATCH]
-                            [--method {integrate,harmony,none}] [--dims DIMS]
-                            [--resolution RESOLUTION]
+usage: 20250308_recluster.r [-h] --input-rds INPUT_RDS  
+                            [--output-dir OUTPUT_DIR] [--name NAME]  
+                            [--cluster-id CLUSTER_ID] [--batch BATCH]  
+                            [--method {integrate,harmony,none}] [--dims DIMS]  
+                            [--resolution RESOLUTION]  
 
 Process single-cell transcriptomics data with batch correction, clustering,
 and differential expression analysis.
