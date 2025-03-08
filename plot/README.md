@@ -1,4 +1,4 @@
-# R script for plot
+# <center>R script for plot<center>
 
 ## scatter plot
 ![image](https://github.com/binzhengbin/YZWL/blob/main/plot/scatter_plot/pig_BW.png)
