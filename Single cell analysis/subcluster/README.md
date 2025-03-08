@@ -12,16 +12,11 @@ and differential expression analysis.
 
 options:  
   -h, --help            show this help message and exit  
-  --input-rds INPUT_RDS  
-                        Path to input Seurat RDS file (required)  
-  --output-dir OUTPUT_DIR  
-                        Output directory [default: current directory './']  
+  --input-rds INPUT_RDS   Path to input Seurat RDS file (required)  
+  --output-dir OUTPUT_DIR  Output directory [default: current directory './']  
   --name NAME           Prefix for output files [default:'single_cell_analysis']  
-  --cluster-id CLUSTER_ID  
-                        Comma-separated cluster IDs to subset (e.g., '1,2,3')
+  --cluster-id CLUSTER_ID  Comma-separated cluster IDs to subset (e.g., '1,2,3')
   --batch BATCH         Batch variable for correction [default: 'replicate']  
-  --method {integrate,harmony,none}  
-                        Batch correction method: 'integrate' (CCA), 'harmony',  
-                        or 'none' [default: 'integrate']  
+  --method {integrate,harmony,none}   Batch correction method: 'integrate' (CCA), 'harmony',   or 'none' [default: 'integrate']  
   --dims DIMS           PCA dimensions for UMAP/clustering, R expression (e.g., '1:20') [default: '1:15']  
   --resolution RESOLUTION Clustering resolution, numeric value [default: 0.3]  
