@@ -51,8 +51,8 @@ run_Integrate <- function(obj, batch, dims, resolution) {
     combined <- IntegrateData(anchorset = anchors)
     combined <- ScaleData(combined, verbose = FALSE)
     combined <- RunPCA(combined, verbose = FALSE)
-    combined <- RunUMAP(combined, dims = dims, verbose = FALSE)
-    combined <- FindNeighbors(combined, dims = dims, verbose = FALSE)
+    combined <- RunUMAP(combined, dims = 1:dims, verbose = FALSE)
+    combined <- FindNeighbors(combined, dims = 1:dims, verbose = FALSE)
     combined <- FindClusters(combined, resolution = resolution, verbose = FALSE)
     return(combined)
 }
@@ -61,8 +61,8 @@ run_harmony <- function(obj, batch, dims, resolution) {
     obj <- SCTransform(obj, assay = "RNA", verbose = FALSE)
     obj <- RunPCA(obj, verbose = FALSE)
     obj <- RunHarmony(obj, group.by.vars = batch)
-    obj <- RunUMAP(obj, reduction = "harmony", dims = dims, verbose = FALSE)
-    obj <- FindNeighbors(obj, reduction = "harmony", dims = dims, verbose = FALSE)
+    obj <- RunUMAP(obj, reduction = "harmony", dims = 1:dims, verbose = FALSE)
+    obj <- FindNeighbors(obj, reduction = "harmony", dims = 1:dims, verbose = FALSE)
     obj <- FindClusters(obj, resolution = resolution, verbose = FALSE)
     return(obj)
 }
@@ -70,8 +70,8 @@ run_harmony <- function(obj, batch, dims, resolution) {
 run_cluster <- function(obj, dims, resolution) {
     obj <- SCTransform(obj, assay = "RNA", verbose = FALSE)
     obj <- RunPCA(obj, verbose = FALSE)
-    obj <- RunUMAP(obj, dims = dims, verbose = FALSE)
-    obj <- FindNeighbors(obj, dims = dims, verbose = FALSE)
+    obj <- RunUMAP(obj, dims = 1:dims, verbose = FALSE)
+    obj <- FindNeighbors(obj, dims = 1:dims, verbose = FALSE)
     obj <- FindClusters(obj, resolution = resolution, verbose = FALSE)
     return(obj)
 }
