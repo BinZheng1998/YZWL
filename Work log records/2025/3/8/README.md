@@ -2,8 +2,8 @@
 
 E4.5.SP.recluster.cell2cluster.csv  
   
-| |cluster| subcluster|
-|---|---|
+| index|cluster| subcluster|
+|---|---|---|
 |Y00546MD_1:8850-2650|0|0| 
 |Y00546MD_1:12100-2000|0|1|  
 |Y00546MD_1:10450-2800|0|0|  
