@@ -1,0 +1,18 @@
+
+df <- readRDS("input.rds")
+obj <- subset(df,subset=seurat_clusters==c("18","20"))
+new_data <- read.csv("/home/bzheng/project/03_3D_spatial/00_data/E4.5.SP.recluster.cell2cluster.csv",header=T)
+cell_names <- new_data[, 1]
+subcluster_info <- new_data[, 3]
+subcluster_map <- setNames(subcluster_info, cell_names)
+seurat_cell_names <- colnames(obj)
+obj@meta.data$subcluster1 <- NA
+for (cell in seurat_cell_names) {
+    if (cell %in% names(subcluster_map)) {
+        obj@meta.data[cell, "subcluster1"] <- subcluster_map[cell]
+    }
+}
+obj@meta.data$combine <- paste(obj@meta.data$seurat_clusters,obj@meta.data$subcluster1,sep='-')
+colnames(obj@meta.data)[colnames(obj@meta.data) == "combine"] <- "subcluster"
+obj@meta.data$subcluster1 <- NULL
+saveRDS(df,file="~/project/03_3D_spatial/00_data/chicken_project/matrix/Normal/SP/E4.5_SP_V4.rds")
