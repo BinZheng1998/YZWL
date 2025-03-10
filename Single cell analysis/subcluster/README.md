@@ -1,4 +1,4 @@
-## recluster subcluster
+## Recluster or Subcluster
 
 
 usage: 20250308_recluster.r [-h] --input-rds INPUT_RDS  
