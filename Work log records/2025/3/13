@@ -1,0 +1,32 @@
+setwd("/Users/zhengbin/Desktop/崖州湾/3D/注释/SP/E3.5重聚类/")
+library(readxl)
+df <- read_excel('../../top50_STRG_result.xlsx',sheet = 4)
+colnames(df)[2]<-"possible_gene"
+a <- read.csv('E3.5.SP.cluster5_1.allmarker.top50.csv')
+library(dplyr)
+merged_data <- a %>%
+  left_join(df, by = c("gene" = "possible_gene"))  
+
+merged_data <- merged_data %>%
+  mutate(gene = ifelse(!is.na(gene.y), gene.y, gene))  
+
+result <- merged_data[,c(1:8)]
+write.csv(result,file = "E3.5.SP.cluster5_1.allmarker.top50.new.csv")
+
+
+df <- read_excel('../../top50_STRG_result.xlsx', sheet = 4)
+colnames(df)[2] <- "possible_gene"
+
+for (i in 6:33) {
+  cluster_file <- paste0("E3.5.SP.cluster", i, ".allmarker.top50.csv")
+  output_file <- paste0("E3.5.SP.cluster", i, ".allmarker.top50.new.csv")
+  
+  a <- read.csv(cluster_file)
+  
+  merged_data <- a %>%
+    left_join(df, by = c("gene" = "possible_gene")) %>%
+    mutate(gene = ifelse(!is.na(gene.y), gene.y, gene))
+  
+  result <- merged_data[, c(1:8)]
+  write.csv(result, file = output_file, row.names = FALSE)
+}
