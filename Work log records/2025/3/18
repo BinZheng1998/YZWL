@@ -1,0 +1,50 @@
+setwd("E:/02-群体进化/02-鸡/phased_breed/converge/10kb_window_5kb_step/top1/xpehh/")
+library(tidyverse)
+
+xpehh <- read.table('../../top5/xpehh/chicken_xpehh_10kb.txt',header = F,sep = '\t')
+xpehh <- xpehh[xpehh$V1 != "chrZ",]
+xpehh <- xpehh[xpehh$V1 != "chrW",]
+xpehh <- xpehh[xpehh$V1 != "chrMT",]
+
+xpehh$V9[is.na(xpehh$V9)] <- 0
+xpehh$V10[is.na(xpehh$V10)] <- 0
+xpehh <- xpehh %>% mutate(XPEHH = rowMeans(select(., V9, V10), na.rm = TRUE))
+
+xpehh1 <- quantile(xpehh$XPEHH,0.01)
+xpehh99 <- quantile(xpehh$XPEHH,0.99)
+
+
+library(dplyr)
+xpehh2 <- xpehh %>%
+  filter( XPEHH < xpehh1 | XPEHH > xpehh99 )
+
+xpehh3 <- xpehh2[,c(1,2,3)]
+colnames(xpehh3) <- c("chromosome", "start", "end")
+write.table(xpehh3,file = 'chicken_xpehh_10kb_raw_1%_99%_regions.txt',row.names = F,sep = '\t')
+
+#合并附近的区间 比如10kb
+merge_intervals <- function(df, threshold) {
+  colnames(df) <- c("chromosome", "start", "end")
+  
+  df <- df[order(df$chromosome, df$start), ]
+  merged <- data.frame(chromosome = character(), start = integer(), end = integer())
+  
+  current_row <- df[1, ]
+  
+  for (i in 2:nrow(df)) {
+    if (df$chromosome[i] == current_row$chromosome &&
+        df$start[i] <= current_row$end + threshold) {
+      current_row$end <- max(current_row$end, df$end[i])
+    } else {
+      merged <- rbind(merged, current_row)
+      current_row <- df[i, ]
+    }
+  }
+  merged <- rbind(merged, current_row)
+  
+  return(merged)
+}
+
+result1 <- merge_intervals(xpehh3, 20000)
+
+write.table(result1,file = 'chicken_xpehh_merged_10kb_1%_99%_regions.txt',row.names = F,sep = '\t')
