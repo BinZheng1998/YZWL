@@ -24,3 +24,17 @@ cor_res <- cor.test(avg_expr1,avg_expr2,method="pearson")
 
 cor_res$p.value
 cor_res$estimate
+
+avg_expr1 <- as.matrix(avg_expr1)
+avg_expr2 <- as.matrix(avg_expr2)
+df <- cbind(avg_expr1,avg_expr2)
+colnames(df) <- c("avg_expr1","avg_expr2")
+library(ggpubr)
+p<-ggplot(df,aes(x=avg_expr1,y=avg_expr2))+
+  geom_point(size = 3)+
+  geom_smooth(method = 'lm',color='blue',formula = y ~ x)+
+  stat_cor(method = 'spearman')+
+  theme_bw()+
+  xlab('Dataset1 Expression (log-normalized)')+
+  ylab('Dataset2 Expression (log-normalized)')
+ggsave(filename="cor.png",plot=p,dpi=500,height=5,width=5)
