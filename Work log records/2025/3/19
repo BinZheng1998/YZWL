@@ -1,1 +1,57 @@
-1
+setwd("/Users/zhengbin/Desktop/崖州湾/3D/注释/SC/E3.5单细胞重聚类/")
+library(readxl)   
+library(readr)    
+library(dplyr)    
+library(openxlsx) 
+library(stringr)  
+
+celltype_data <- read_excel("../../../注释/chicken_marker_gene1.xlsx")
+
+file_list <- list.files(pattern = "top50\\.new\\.csv$")
+
+all_results <- list()
+
+for (csv_file in file_list) {
+  diff_data <- read.csv(csv_file)
+  
+  genes_clean <- gsub( "^gene-", "",diff_data$gene)  
+  
+  matched_celltypes <- character(nrow(diff_data))
+  matched_markers <- character(nrow(diff_data))
+  
+  for (i in seq_along(genes_clean)) {
+    gene <- genes_clean[i]
+    
+    matches <- lapply(colnames(celltype_data), function(ct) {
+      markers <- na.omit(celltype_data[[ct]])
+      if (gene %in% markers) {
+        return(data.frame(CellType = ct, Marker = gene))
+      }
+      return(NULL)
+    }) %>% bind_rows()
+    
+    if (nrow(matches) > 0) {
+      matched_celltypes[i] <- paste(matches$CellType, collapse = ",")
+      #matched_markers[i] <- paste(matches$Marker, collapse = ",")
+      matched_markers[i] <- matches$Marker
+    }
+  }
+  
+  result_df <- diff_data %>%
+    mutate(
+      Matched_CellTypes = matched_celltypes,
+      Matched_Markers = matched_markers
+    )
+  
+  sheet_name <- str_replace(csv_file, "\\.allmarker\\.top50\\.new\\.csv$", "")
+  
+  all_results[[sheet_name]] <- result_df
+}
+
+write.xlsx(
+  all_results, 
+  file = "E3.5.SC.Integrated_Results.xlsx",
+  colNames = TRUE,
+  rowNames = FALSE
+)
+
