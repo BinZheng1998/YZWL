@@ -1,0 +1,46 @@
+#xpnsl xpehh
+setwd("E:/02-群体进化/03-猪/selection/10kbwindow_5kbstep/top1/xpnsl/")
+library(tidyverse)
+
+xpnsl <- read.table('../../top5/xpnsl/pig_xpnsl_10kb.txt',header = F,sep = '\t')
+xpnsl <- xpnsl[xpnsl$V1 != "chr19",]#chrX
+xpnsl <- xpnsl[xpnsl$V1 != "chr20",]#chtY
+xpnsl <- xpnsl[xpnsl$V1 != "chr22",]#chrMT
+xpnsl$V9[is.na(xpnsl$V9)] <- 0
+xpnsl$V10[is.na(xpnsl$V10)] <- 0
+xpnsl <- xpnsl %>% mutate(XPNSL = rowMeans(select(., V9, V10), na.rm = TRUE))
+
+xpnsl1 <- quantile(xpnsl$XPNSL,0.01)
+xpnsl99 <- quantile(xpnsl$XPNSL,0.99)
+
+library(dplyr)
+xpnsl2 <- xpnsl %>%
+  filter(XPNSL < xpnsl1 | XPNSL > xpnsl99 )
+xpnsl3 <- xpnsl2[,c(1,2,3)]
+colnames(xpnsl3) <- c("chromosome", "start", "end")
+write.table(xpnsl3,file = 'pig_xpnsl_10kb_raw_1%_99%_regions.txt',row.names = F,sep = '\t')
+#合并附近的区间 比如10kb
+merge_intervals <- function(df, threshold) {
+  colnames(df) <- c("chromosome", "start", "end")
+  
+  df <- df[order(df$chromosome, df$start), ]
+  merged <- data.frame(chromosome = character(), start = integer(), end = integer())
+  
+  current_row <- df[1, ]
+  
+  for (i in 2:nrow(df)) {
+    if (df$chromosome[i] == current_row$chromosome &&
+        df$start[i] <= current_row$end + threshold) {
+      current_row$end <- max(current_row$end, df$end[i])
+    } else {
+      merged <- rbind(merged, current_row)
+      current_row <- df[i, ]
+    }
+  }
+  merged <- rbind(merged, current_row)
+  
+  return(merged)
+}
+
+result1 <- merge_intervals(xpnsl3, 20000)
+write.table(result1,file = 'pig_xpnsl_10kb_merged_5%_95%_regions.txt',row.names = F,sep = '\t')
