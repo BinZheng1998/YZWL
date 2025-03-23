@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# 定义不同物种的GFF文件路径（使用关联数组）
+declare -A GFF_PATHS
+GFF_PATHS["chicken"]="/home/bzheng/ref/huxu_v23_ref/annotation/diamond/result/result/step4_3.gff"
+GFF_PATHS["dog"]="/home/bzheng/others_species_analysis/dog/ref/dog.gff"
+GFF_PATHS["cattle"]="/home/bzheng/others_species_analysis/cattle/ref/Btau_5.0.1_new.gff"
+GFF_PATHS["pig"]="/home/bzheng/others_species_analysis/pig/ref/pig.gff"
+GFF_PATHS["sheep"]="/home/bzheng/others_species_analysis/sheep/ref/sheep.gff"
+
+# 定义支持的物种列表
+SUPPORTED_SPECIES="chicken dog cattle pig sheep"
+
+# 默认参数值
+INPUT=""
+SPECIES="cattle"
+PHE="BW"
+METHOD="xpehh"
+NEG_POS="neg"  # 默认负向，与帮助信息一致
+TOP=1
+SHOW_HELP=false
+
+# 解析命令行参数
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --input) INPUT="$2"; shift ;;
+        --species) SPECIES="$2"; shift ;;
+        --phe) PHE="$2"; shift ;;
+        --method) METHOD="$2"; shift ;;
+        --neg) NEG_POS="neg" ;;
+        --pos) NEG_POS="pos" ;;
+        --top) TOP="$2"; shift ;;
+        -h|--help) SHOW_HELP=true ;;
+        *) echo "未知选项: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# 显示帮助信息
+if $SHOW_HELP; then
+    echo "Usage: $0 --input <输入文件> [选项]"
+    echo "这是一个用于提取基因的bash脚本。支持多个窗口大小和多种方法。"
+    echo "选项:"
+    echo "  --input      输入文件路径（必需）"
+    echo "  --species    物种名称，支持: $SUPPORTED_SPECIES [默认: $SPECIES]"
+    echo "  --phe        表型，例如 'BW' 或 'Domestication' [默认: $PHE]"
+    echo "  --method     方法，例如 'xpehh', 'xpnsl', 'pi', 'fst' [默认: $METHOD]"
+    echo "  --neg        选择负向区域 [默认]"
+    echo "  --pos        选择正向区域"
+    echo "  --top        选择前多少百分比的区域，例如 1 [默认: $TOP]"
+    echo "  -h, --help   显示帮助信息并退出"
+    exit 0
+fi
+
+# 检查输入文件是否提供
+if [ -z "$INPUT" ]; then
+    echo "错误: 必须提供输入文件路径。使用 --help 查看帮助信息。"
+    exit 1
+fi
+
+# 检查输入文件是否存在
+if [ ! -f "$INPUT" ]; then
+    echo "错误: 输入文件不存在: $INPUT"
+    exit 1
+fi
+
+# 检查物种是否支持
+if ! echo "$SUPPORTED_SPECIES" | grep -qw "$SPECIES"; then
+    echo "错误: 不支持的物种。支持的物种包括: $SUPPORTED_SPECIES"
+    exit 1
+fi
+
+# 获取对应物种的GFF文件路径
+GFF_FILE="${GFF_PATHS[$SPECIES]}"
+
+# 检查GFF文件是否存在
+if [ ! -f "$GFF_FILE" ]; then
+    echo "错误: GFF文件不存在: $GFF_FILE"
+    exit 1
+fi
+
+# 检查Python脚本是否存在
+PYTHON_SCRIPT="$HOME/project/01_evolution/script/extract_gene.py"
+if [ ! -f "$PYTHON_SCRIPT" ]; then
+    echo "错误: Python脚本不存在: $PYTHON_SCRIPT"
+    exit 1
+fi
+
+# 定义需要运行的窗口大小
+WINDOWS=("0kb" "100kb" "200kb")
+
+# 循环运行每个窗口大小
+for WINDOW in "${WINDOWS[@]}"; do
+    # 构建输出文件路径
+    OUTPUT_FILE="./${SPECIES}_${PHE}_${METHOD}_${TOP}%_${NEG_POS}_${WINDOW}_genes.txt"
+
+    # 调用Python脚本
+    COMMAND="python $PYTHON_SCRIPT $INPUT $GFF_FILE $WINDOW $OUTPUT_FILE"
+    $COMMAND
+
+    # 检查命令执行是否成功
+    if [ $? -eq 0 ]; then
+        echo "基因提取完成，结果保存在: $OUTPUT_FILE"
+    else
+        echo "错误: 基因提取失败，窗口: $WINDOW"
+    fi
+done
