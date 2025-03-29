@@ -14,8 +14,11 @@ for (file in gene_files) {
   gene <- read.table(file, header = TRUE, sep = "\t")
   
   # 提取基因列表
-  unique_genes <- unique(gene$x)
+  genes_list <- strsplit(gene[[5]], ",")
+  all_genes <- unlist(genes_list)
+  unique_genes <- unique(all_genes)
   symbol <- as.character(unique_genes)
+  symbol <- gsub(" ","",symbol)
   
   # 转换基因符号为 ENTREZID
   eg <- bitr(symbol, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Ss.eg.db)
