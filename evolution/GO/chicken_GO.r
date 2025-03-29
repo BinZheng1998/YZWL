@@ -12,6 +12,7 @@ for (file in gene_files) {
   all_genes <- unlist(genes_list)
   unique_genes <- unique(all_genes)
   symbol <- as.character(unique_genes)
+  symbol <- gsub(" ","",symbol)
   
   # 转换基因符号为 ENTREZID
   eg <- bitr(symbol, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = "org.Gg.eg.db")
