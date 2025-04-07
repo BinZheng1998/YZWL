@@ -1,0 +1,3 @@
+glactools vcfm2acf --onlyGT --fai human_g1k_v37.fasta.fai chr6.recode.vcf > chr6.acf.gz
+glactools acf2betascan --fold chr6.acf.gz | gzip > chr6.beta.txt.gz
+python BetaScan.py -i chr6.beta.txt.gz -fold -w 10000 -o chr6.betascores.txt
