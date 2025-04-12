@@ -1,0 +1,157 @@
+setwd('E:/02-群体进化/07-结果/202504-筛选区间占比图/')
+chicken1 <- read.table('E:/02-群体进化/02-鸡/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+chicken1$length <- chicken1$V3 - chicken1$V2
+chicken_length1 <- sum(chicken1$length)
+chicken_length1
+chicken_genome <- 200044509	+152127819+112377238+91364047+59473047+36158469+36439816+29594148+23966833+
+  21606253+19822308+20591337+19253982+16259740+13529386+4932503+11322113+12199395+11295715+15361164+7106554+
+  5772503+6970121+8591846+4095597+6534586+6322964+5942585+6839231+3643476+5478923+3130476+4180360+4011625+
+  3056416+3424470+2501204+3700872
+chicken_neg_BW_top1 <-chicken_length1/chicken_genome
+
+chicken2 <- read.table('E:/02-群体进化/02-鸡/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+chicken2$length <- chicken2$V3 - chicken2$V2
+chicken_length2 <- sum(chicken2$length)
+chicken_length2
+chicken_neg_BW_top5 <- chicken_length2/chicken_genome
+
+chicken3 <- read.table('E:/02-群体进化/02-鸡/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+chicken3$length <- chicken3$V3 - chicken3$V2
+chicken_length3 <- sum(chicken3$length)
+chicken_length3
+chicken_pos_BW_top1 <- chicken_length3/chicken_genome  
+
+chicken4 <- read.table('E:/02-群体进化/02-鸡/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+chicken4$length <- chicken4$V3 - chicken4$V2
+chicken_length4 <- sum(chicken4$length)
+chicken_length4
+chicken_pos_BW_top5 <- chicken_length4/chicken_genome  
+
+res1 <- data.frame(species = c("Chicken","Chicken","Chicken","Chicken"),
+                   type1 = c("Neg","Neg","Pos","Pos"),
+                   type2 = c("Top1","Top5","Top1","Top5"),
+                   porp = c(chicken_neg_BW_top1,chicken_neg_BW_top5,chicken_pos_BW_top1,chicken_pos_BW_top5))
+
+#pig
+pig_genome <- 274327039+151925050+132841994+130910870+104524876+170836345+121823490+
+  138963963+139499588+69358812+79162308+61601872+208321721+141745767+140410508+79944260+63486385+55972519
+pig1 <- read.table("E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_neg_DCMS_top1_merged_regions.txt",sep = '\t')
+pig1$length <- pig1$V3 - pig1$V2
+pig_length1 <- sum(pig1$length)
+pig_length1
+pig_neg_BW_top1 <-pig_length1/pig_genome
+
+pig2 <- read.table("E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_neg_DCMS_top5_merged_regions.txt",sep = '\t')
+pig2$length <- pig2$V3 - pig2$V2
+pig_length2 <- sum(pig2$length)
+pig_length2
+pig_neg_BW_top5 <-pig_length2/pig_genome
+
+pig3 <- read.table("E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_pos_DCMS_top1_merged_regions.txt",sep = '\t')
+pig3$length <- pig3$V3 - pig3$V2
+pig_length3 <- sum(pig3$length)
+pig_length3
+pig_pos_BW_top1 <-pig_length3/pig_genome
+
+pig4 <- read.table("E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_pos_DCMS_top5_merged_regions.txt",sep = '\t')
+pig4$length <- pig4$V3 - pig4$V2
+pig_length4 <- sum(pig4$length)
+pig_length4
+pig_pos_BW_top5 <-pig_length4/pig_genome
+
+res2 <- data.frame(species = c("Pig","Pig","Pig","Pig"),
+                   type1 = c("Neg","Neg","Pos","Pos"),
+                   type2 = c("Top1","Top5","Top1","Top5"),
+                   porp = c(pig_neg_BW_top1,pig_neg_BW_top5,pig_pos_BW_top1,pig_pos_BW_top5))
+
+# cattle
+cattle_genome <- 158972876+137479425+121888057+121284772+121584146+119927886+113155487+114055384+106206484+104654538+
+  107582167+91593655+84590997+85007120+85681136+82000027+75367154+66346785+64325510+72301449+71883091+61679430+52684911+
+  62911103+43100425+51889111+45695690+46481278+51869468
+cattle1 <- read.table("E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_neg_DCMS_top1_merged_regions.txt",sep = '\t')
+cattle1$length <- cattle1$V3 - cattle1$V2
+cattle_length1 <- sum(cattle1$length)
+cattle_length1
+cattle_neg_BW_top1 <- cattle_length1/cattle_genome
+
+cattle2 <- read.table("E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_neg_DCMS_top5_merged_regions.txt",sep = '\t')
+cattle2$length <- cattle2$V3 - cattle2$V2
+cattle_length2 <- sum(cattle2$length)
+cattle_length2
+cattle_neg_BW_top5 <- cattle_length2/cattle_genome
+
+cattle3 <- read.table("E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_pos_DCMS_top1_merged_regions.txt",sep = '\t')
+cattle3$length <- cattle3$V3 - cattle3$V2
+cattle_length3 <- sum(cattle3$length)
+cattle_length3
+cattle_pos_BW_top1 <- cattle_length3/cattle_genome
+
+cattle4 <- read.table("E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_pos_DCMS_top5_merged_regions.txt",sep = '\t')
+cattle4$length <- cattle4$V3 - cattle4$V2
+cattle_length4 <- sum(cattle4$length)
+cattle_length4
+cattle_pos_BW_top5 <- cattle_length4/cattle_genome
+
+res3 <- data.frame(species = c("Cattle","Cattle","Cattle","Cattle"),
+                   type1 = c("Neg","Neg","Pos","Pos"),
+                   type2 = c("Top1","Top5","Top1","Top5"),
+                   porp = c(cattle_neg_BW_top1,cattle_neg_BW_top5,cattle_pos_BW_top1,cattle_pos_BW_top5))
+
+#sheep 
+sheep_genome <- 301310028+265688840+241140967+130071916+117625568+129788820+107697089+98768167+104713370+97206448+60977283+
+  84520005+87256641+71110528+90320817+78351213+82584647+70857294+62707585+55937558+52946817+55669323+68305172+43079387+47656618+49387814
+sheep1 <- read.table("E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_neg_DCMS_top1_merged_regions.txt",sep = '\t')
+sheep1$length <- sheep1$V3-sheep1$V2
+sheep_length1 <- sum(sheep1$length)
+sheep_length1
+sheep_neg_BW_top1 <- sheep_length1/sheep_genome
+
+sheep2 <- read.table("E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_neg_DCMS_top5_merged_regions.txt",sep = '\t')
+sheep2$length <- sheep2$V3-sheep2$V2
+sheep_length2 <- sum(sheep2$length)
+sheep_length2
+sheep_neg_BW_top5 <- sheep_length2/sheep_genome
+
+sheep3 <- read.table("E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_pos_DCMS_top1_merged_regions.txt",sep = '\t')
+sheep3$length <- sheep3$V3-sheep3$V2
+sheep_length3 <- sum(sheep3$length)
+sheep_length3
+sheep_pos_BW_top1 <- sheep_length3/sheep_genome
+
+sheep4 <- read.table("E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_pos_DCMS_top5_merged_regions.txt",sep = '\t')
+sheep4$length <- sheep4$V3-sheep4$V2
+sheep_length4 <- sum(sheep4$length)
+sheep_length4
+sheep_pos_BW_top5 <- sheep_length4/sheep_genome
+
+res4 <- data.frame(species = c("Sheep","Sheep","Sheep","Sheep"),
+                   type1 = c("Neg","Neg","Pos","Pos"),
+                   type2 = c("Top1","Top5","Top1","Top5"),
+                   porp = c(sheep_neg_BW_top1,sheep_neg_BW_top5,sheep_pos_BW_top1,sheep_pos_BW_top5))
+
+res <- rbind(res1,res2,res3,res4)
+library(ggplot2)
+df1 <- res[res$type2=="Top1",]
+p1 <-ggplot(df1,mapping = aes(x=species,y=porp,fill=type1))+
+  geom_bar(stat="identity",position='dodge')+
+  theme_bw()+
+  theme(axis.title.x = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "None")+
+  ylim(c(0,0.015))+
+  ylab("Proportion")+
+  scale_y_continuous(breaks = c(0,0.005,0.01))
+p1
+
+df2 <- res[res$type2=="Top5",]
+p2 <-ggplot(df2,mapping = aes(x=species,y=porp,fill=type1))+
+  geom_bar(stat="identity",position='dodge')+
+  theme_bw()+
+  theme(axis.title.x = element_blank(),
+        legend.title = element_blank())+
+  ylim(c(0,0.06))+
+  ylab("Proportion")+
+  scale_y_continuous(breaks = c(0,0.01,0.02,0.03,0.04,0.05))
+p2
+p <- p1+p2
+ggsave(filename = "4species_BW_prop.png",p,width = 7,height = 3,dpi = 300)
