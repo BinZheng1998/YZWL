@@ -1,0 +1,77 @@
+import pandas as pd
+
+# 步骤 1: 合并 RBBH 文件生成表格 A
+# 读取四个 RBBH 文件
+rbbh_files = {
+    'chicken': 'human_chicken_rbbh.txt',
+    'cattle': 'human_cattle_rbbh.txt',
+    'pig': 'human_pig_rbbh.txt',
+    'sheep': 'human_sheep_rbbh.txt'
+}
+
+# 初始化一个字典来存储 human ID 和其他物种 ID 的对应关系
+merged_data = {}
+
+# 遍历每个 RBBH 文件
+for species, file in rbbh_files.items():
+    # 读取 RBBH 文件，假设无表头，两列
+    df = pd.read_csv(file, sep='\t', header=None, names=['human_id', f'{species}_id'])
+    # 将数据存入字典，以 human_id 为键
+    for _, row in df.iterrows():
+        human_id = row['human_id']
+        species_id = row[f'{species}_id']
+        if human_id not in merged_data:
+            merged_data[human_id] = {'human_id': human_id}
+        merged_data[human_id][f'{species}_id'] = species_id
+
+# 转换为 DataFrame
+table_A = pd.DataFrame.from_dict(merged_data, orient='index').reset_index(drop=True)
+# 确保列顺序为 human_id, chicken_id, cattle_id, pig_id, sheep_id
+table_A = table_A[['human_id', 'chicken_id', 'cattle_id', 'pig_id', 'sheep_id']]
+# 填充缺失值为 NaN
+table_A = table_A.fillna(pd.NA)
+# 输出表格 A
+table_A.to_csv('raw_ensembl_gene.txt', sep='\t', index=False)
+print("表格 A 已生成：raw_ensembl_gene.txt")
+
+# 步骤 2: 替换 Ensembl ID 为 gene symbol 生成表格 B
+# 读取 gene symbol 文件
+
+gene_files = {
+    'human': '../../human/human_gene.txt',
+    'chicken': '../../chicken/chicken_gene.txt',
+    'cattle': '../../cattle/cattle_gene.txt',
+    'pig': '../../pig/pig_gene.txt',
+    'sheep': '../../sheep/sheep_gene.txt'
+}
+
+# 创建 Ensembl ID 到 gene symbol 的映射
+id_to_symbol = {}
+for species, file in gene_files.items():
+    df = pd.read_csv(file, sep='\t', header=None, names=['ensembl_id', 'symbol'])
+    id_to_symbol[species] = dict(zip(df['ensembl_id'], df['symbol']))
+
+# 复制表格 A 用于生成表格 B
+table_B = table_A.copy()
+
+# 替换每一列的 Ensembl ID 为 gene symbol
+for species in ['human', 'chicken', 'cattle', 'pig', 'sheep']:
+    col = f'{species}_id'
+    # 使用映射替换，若无对应 symbol 则保留原始 ID
+    table_B[col] = table_B[col].apply(lambda x: id_to_symbol[species].get(x, x) if pd.notna(x) else pd.NA)
+
+# 输出表格 B
+table_B.to_csv('raw_symbol_gene.txt', sep='\t', index=False)
+print("表格 B 已生成：raw_symbol_gene.txt")
+
+# 步骤 3: 去重生成表格 C
+# 移除完全重复的行
+table_C = table_B.drop_duplicates()
+# 输出表格 C
+table_C.to_csv('final_symbol_gene.txt', sep='\t', index=False)
+print("表格 C 已生成：final_ssymbol_gene.txt")
+
+# 输出表格的行数以便检查
+print(f"表格 A 行数: {len(table_A)}")
+print(f"表格 B 行数: {len(table_B)}")
+print(f"表格 C 行数: {len(table_C)}")
