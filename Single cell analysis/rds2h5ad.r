@@ -1,3 +1,5 @@
+library(SeuratDisk)
+library(Seurat)
 obj <- readRDS("E2.5_C24_C27_res0.3.processed.rds")
 head(obj@assays$SCT@counts)
 DefaultAssay(obj) <- "SCT"
