@@ -1,0 +1,45 @@
+#!/bin/bash
+#CSUB -J GWAS       # job name
+#CSUB -q c01             # queue name
+#CSUB -o %J.out          # output file
+#CSUB -e %J.error        # error file
+#CSUB -n 16              # 使用16个CPU核
+#CSUB -cwd /share/org/YZWL/yzwl_zhengbin/project/02-evolution/chicken/script/
+
+DATA_DIR="/share/org/YZWL/yzwl_zhengbin/project/02-evolution/chicken/00-data/WPR2"
+JOB_DIR="/share/org/YZWL/yzwl_zhengbin/project/02-evolution/chicken/script/gwas_script"
+OUTPUT_DIR="/share/org/YZWL/yzwl_zhengbin/project/02-evolution/chicken/result"
+# 创建必要的目录
+mkdir -p $JOB_DIR
+#mkdir -p $OUTPUT_DIR
+
+# 遍历每个 _1.fq.gz 文件，假设双端文件后缀是 _1.fq.gz 和 _2.fq.gz
+for file1 in ${DATA_DIR}/*_1.fastq; do
+    # 提取文件的基础名称（不包含路径和后缀）
+    basename=$(basename "$file1" _1.fastq)
+    
+    # 对应的第二端文件名
+    file2="${DATA_DIR}/${basename}_2.fastq"
+    
+    # 创建对应的作业脚本
+    job_script="${JOB_DIR}/${basename}_gwas.sh"
+    
+    # 写入作业脚本内容
+    echo "#!/bin/bash" > $job_script
+    echo "#CSUB -J gwas_${basename}" >> $job_script  # 作业名
+    echo "#CSUB -q c01" >> $job_script  # 指定队列
+    echo "#CSUB -o ${JOB_DIR}/${basename}.out" >> $job_script  # 输出文件
+    echo "#CSUB -e ${JOB_DIR}/${basename}.err" >> $job_script  # 错误文件
+    echo "#CSUB -n 16" >> $job_script  # 使用16个线程
+    echo "#CSUB -R span[hosts=1]" >> $job_script
+    echo "#CSUB -cwd $OUTPUT_DIR" >> $job_script  # 指定作业运行目录
+    echo "" >> $job_script
+    echo "source /share/org/YZWL/yzwl_zhengbin/software/miniconda3/bin/activate" >> $job_script
+    echo "conda activate gwas" >> $job_script
+    echo "" >> $job_script
+
+    # BWA 比对指令
+    echo "sh /share/org/YZWL/yzwl_zhengbin/project/02-evolution/chicken/script/fastq2gvcf.sh \\" >> $job_script
+    echo "${file1} ${file2} 2>${OUTPUT_DIR}/${basename}.gwas.log " >> $job_script
+
+done
