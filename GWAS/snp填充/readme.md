@@ -1,8 +1,8 @@
 # 请看完整个README
 ##  1
 awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattle_metadata.txt > cattle_metadata2.txt
-这个代码可以将下方的格式改为beagle.sh需要的input_sample.txt格式
-原始格式：
+#   这个代码可以将下方的格式改为beagle.sh需要的input_sample.txt格式
+#   原始格式：
 ACKR000001      Cocker-Spaniel
 ACKR000002      Cocker-Spaniel
 ACKR000003      Cocker-Spaniel
@@ -26,7 +26,7 @@ AFOX000004      American-Foxhound
 AFOX000005      American-Foxhound
 AFOX000006      American-Foxhound
 AFOX000007      American-Foxhound
-修改后的：
+#  修改后的：
 Wire-Fox-Terrier FXTE000001,FXTE000002,WIFX000001,WIFX000002
 Polish-Lowland-Sheepdog POLS000001,POLS000002
 Boxer BOXR000001,BOXR000002,BOXR000003,BOXR000004,BOXR000005
