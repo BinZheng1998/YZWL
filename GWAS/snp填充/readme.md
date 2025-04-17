@@ -1,5 +1,5 @@
 # 请看完整个README
-##  1
+##  part1
 ```bash
 awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattle_metadata.txt > cattle_metadata2.txt
 ```
@@ -45,7 +45,7 @@ Giant-Schnauzer GSNZ000001,GSNZ000002,GSNZ000003,GSNZ000004,GSNZ000005,GSNZ00000
 Thailand VILLTH000001,VILLTH000002,VILLTH000003,VILLTH000004,VILLTH000005,VILLTH000006,VILLTH000007,VILLTH000008,VILLTH000009,VILLTH000010
 English-Foxhound EFXH000002,EFXH000003
 
-#  2
+#  part2
 #如果vcf文件中出现单倍体使用下述代码进行修改，修改前请对vcf文件进行简化
 
 ``` bash
