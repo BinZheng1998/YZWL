@@ -35,3 +35,10 @@ Slovak-Cuvac SLCU000001,SLCU000002,SLCU000003,SLCU000004,SLCU000005,SLCU000006,S
 Giant-Schnauzer GSNZ000001,GSNZ000002,GSNZ000003,GSNZ000004,GSNZ000005,GSNZ000006
 Thailand VILLTH000001,VILLTH000002,VILLTH000003,VILLTH000004,VILLTH000005,VILLTH000006,VILLTH000007,VILLTH000008,VILLTH000009,VILLTH000010
 English-Foxhound EFXH000002,EFXH000003
+
+
+
+#如果vcf文件中出现单倍体使用下述代码进行修改，修改前请对vcf文件进行简化
+zcat chr36_DP4_SNP_2allele_50miss_maf001_HWE1e6_simply.vcf.gz | awk 'BEGIN {FS=OFS="\t"} {for (i=10; i<=NF; i++) if ($i == ".") $i = "./."; print}' | bgzip -c > test.useimputation.vcf.gz
+#简化vcf
+bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o snp.simply.vcf.gz
