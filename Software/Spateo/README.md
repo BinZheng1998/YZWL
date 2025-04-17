@@ -1,6 +1,6 @@
 # Spateo 
 
-#  install
+## install
 https://spateo-release.readthedocs.io/en/latest/installation.html
 
 ``` bash
