@@ -1,3 +1,5 @@
+# 请看完整个README
+##  1
 awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattle_metadata.txt > cattle_metadata2.txt
 这个代码可以将下方的格式改为beagle.sh需要的input_sample.txt格式
 原始格式：
@@ -36,8 +38,7 @@ Giant-Schnauzer GSNZ000001,GSNZ000002,GSNZ000003,GSNZ000004,GSNZ000005,GSNZ00000
 Thailand VILLTH000001,VILLTH000002,VILLTH000003,VILLTH000004,VILLTH000005,VILLTH000006,VILLTH000007,VILLTH000008,VILLTH000009,VILLTH000010
 English-Foxhound EFXH000002,EFXH000003
 
-
-
+#  2
 #如果vcf文件中出现单倍体使用下述代码进行修改，修改前请对vcf文件进行简化
 zcat chr36_DP4_SNP_2allele_50miss_maf001_HWE1e6_simply.vcf.gz | awk 'BEGIN {FS=OFS="\t"} {for (i=10; i<=NF; i++) if ($i == ".") $i = "./."; print}' | bgzip -c > test.useimputation.vcf.gz
 #简化vcf
