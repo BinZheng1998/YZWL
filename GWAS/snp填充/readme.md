@@ -3,6 +3,7 @@
 awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattle_metadata.txt > cattle_metadata2.txt
 
 #这个代码可以将下方的格式改为beagle.sh需要的input_sample.txt格式
+
 #原始格式：
 
 ACKR000001      Cocker-Spaniel
