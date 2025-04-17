@@ -1,2 +1,1 @@
 GWAS
-snp calling
