@@ -46,7 +46,7 @@ English-Foxhound EFXH000002,EFXH000003
 #  2
 #如果vcf文件中出现单倍体使用下述代码进行修改，修改前请对vcf文件进行简化
 
-zcat chr36_DP4_SNP_2allele_50miss_maf001_HWE1e6_simply.vcf.gz | awk 'BEGIN {FS=OFS="\t"} {for (i=10; i<=NF; i++) if ($i == ".") $i = "./."; print}' | bgzip -c > test.useimputation.vcf.gz
+```zcat chr36_DP4_SNP_2allele_50miss_maf001_HWE1e6_simply.vcf.gz | awk 'BEGIN {FS=OFS="\t"} {for (i=10; i<=NF; i++) if ($i == ".") $i = "./."; print}' | bgzip -c > test.useimputation.vcf.gz```
 
 #简化vcf
-bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o snp.simply.vcf.gz
+```bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o snp.simply.vcf.gz```
