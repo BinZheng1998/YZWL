@@ -1,5 +1,5 @@
 # 请看完整个README
-##  part1
+#  part1
 ```bash
 awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattle_metadata.txt > cattle_metadata2.txt
 ```
