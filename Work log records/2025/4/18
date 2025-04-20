@@ -1,0 +1,26 @@
+setwd("E:/02-群体进化/07-结果/202504-富集分析/GO-KEGG-orthology-gene/")
+chicken <- read.table("4species_neg_BW_top1_50kb_homo_chicken_GO.txt",sep = '\t',header=T)
+chicken$species <- "chicken"
+cattle <- read.table("4species_neg_BW_top1_50kb_homo_cattle_GO.txt",sep = '\t',header=T)
+cattle$species <- "cattle"
+pig <- read.table("4species_neg_BW_top1_50kb_homo_pig_GO.txt",sep = '\t',header=T)
+pig$species <- "pig"
+sheep <- read.table("4species_neg_BW_top1_50kb_homo_sheep_GO.txt",sep = '\t',header=T)
+sheep$species <- "sheep"
+
+data <- rbind(chicken,cattle,pig,sheep)
+data <- cbind(data[,13],data)
+colnames(data)[1] = "Species"
+
+species_counts <- data %>%
+  distinct(Description, species, .keep_all = TRUE) %>%  # 去除同一物种内的重复
+  group_by(Description) %>%
+  summarise(Species_Count = n_distinct(species)) %>%    # 统计唯一物种数
+  filter(Species_Count >= 4)  
+
+result <- data %>%
+  inner_join(species_counts, by = "Description") %>%    # 匹配物种数≥3的通路
+  arrange(desc(Species_Count), Description)  
+
+write.table(result,file = "overlap_GO_neg_BW_top1_50kb.txt",row.names = F,sep = '\t')
+
