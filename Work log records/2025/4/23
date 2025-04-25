@@ -1,0 +1,264 @@
+setwd('E:/02-群体进化/07-结果/202504-筛选区间占比图/')
+df1 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df1$species <- "Chicken"
+df1$type1 <- "BW"
+df1$type2 <- "1%"
+df1$type3 <- "PS"
+
+df2 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df2$species <- "Chicken"
+df2$type1 <- "BW"
+df2$type2 <- "5%"
+df2$type3 <- "PS"
+
+df3 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df3$species <- "Chicken"
+df3$type1 <- "BW"
+df3$type2 <- "1%"
+df3$type3 <- "NS"
+
+df4 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/BW_selection/DCMS-FST-PI-tajimaD_202504/regions/chicken_BW_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df4$species <- "Chicken"
+df4$type1 <- "BW"
+df4$type2 <- "5%"
+df4$type3 <- "NS"
+
+df5 <- read.table('E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df5$species <- "Pig"
+df5$type1 <- "BW"
+df5$type2 <- "1%"
+df5$type3 <- "NS"
+
+df6 <- read.table('E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df6$species <- "Pig"
+df6$type1 <- "BW"
+df6$type2 <- "5%"
+df6$type3 <- "NS"
+
+df7 <- read.table('E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df7$species <- "Pig"
+df7$type1 <- "BW"
+df7$type2 <- "1%"
+df7$type3 <- "PS"
+
+df8 <- read.table('E:/02-群体进化/03-猪/selection_body_weight/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/pig_BW_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df8$species <- "Pig"
+df8$type1 <- "BW"
+df8$type2 <- "5%"
+df8$type3 <- "PS"
+
+#
+df9 <- read.table('E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df9$species <- "Cattle"
+df9$type1 <- "BW"
+df9$type2 <- "1%"
+df9$type3 <- "NS"
+
+df10 <- read.table('E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df10$species <- "Cattle"
+df10$type1 <- "BW"
+df10$type2 <- "5%"
+df10$type3 <- "NS"
+
+df11 <- read.table('E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df11$species <- "Cattle"
+df11$type1 <- "BW"
+df11$type2 <- "1%"
+df11$type3 <- "PS"
+
+df12 <- read.table('E:/02-群体进化/04-牛/selection_BW/10kb_window_5kb_step/DCMS-FST-Pi-tajimaD-202504/regions/cattle_BW_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df12$species <- "Cattle"
+df12$type1 <- "BW"
+df12$type2 <- "5%"
+df12$type3 <- "PS"
+
+df13 <- read.table('E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df13$species <- "Sheep"
+df13$type1 <- "BW"
+df13$type2 <- "1%"
+df13$type3 <- "NS"
+
+df14 <- read.table('E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df14$species <- "Sheep"
+df14$type1 <- "BW"
+df14$type2 <- "5%"
+df14$type3 <- "NS"
+
+df15 <- read.table('E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df15$species <- "Sheep"
+df15$type1 <- "BW"
+df15$type2 <- "1%"
+df15$type3 <- "PS"
+
+df16 <- read.table('E:/02-群体进化/06-羊/selection_BW/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/sheep_BW_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df16$species <- "Sheep"
+df16$type1 <- "BW"
+df16$type2 <- "5%"
+df16$type3 <- "PS"
+
+#Domestication
+df17 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/converge/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/chicken_selection_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df17$species <- "Chicken"
+df17$type1 <- "Domestication"
+df17$type2 <- "1%"
+df17$type3 <- "NS"
+
+df18 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/converge/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/chicken_selection_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df18$species <- "Chicken"
+df18$type1 <- "Domestication"
+df18$type2 <- "5%"
+df18$type3 <- "NS"
+
+df19 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/converge/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/chicken_selection_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df19$species <- "Chicken"
+df19$type1 <- "Domestication"
+df19$type2 <- "1%"
+df19$type3 <- "PS"
+
+df20 <- read.table('E:/02-群体进化/02-鸡/old_res/phased_breed/converge/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/chicken_selection_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df20$species <- "Chicken"
+df20$type1 <- "Domestication"
+df20$type2 <- "5%"
+df20$type3 <- "PS"
+
+df21 <- read.table('E:/02-群体进化/03-猪/selection/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/pig_selection_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df21$species <- "Pig"
+df21$type1 <- "Domestication"
+df21$type2 <- "1%"
+df21$type3 <- "NS"
+
+df22 <- read.table('E:/02-群体进化/03-猪/selection/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/pig_selection_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df22$species <- "Pig"
+df22$type1 <- "Domestication"
+df22$type2 <- "5%"
+df22$type3 <- "NS"
+
+df23 <- read.table('E:/02-群体进化/03-猪/selection/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/pig_selection_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df23$species <- "Pig"
+df23$type1 <- "Domestication"
+df23$type2 <- "1%"
+df23$type3 <- "PS"
+
+df24 <- read.table('E:/02-群体进化/03-猪/selection/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/pig_selection_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df24$species <- "Pig"
+df24$type1 <- "Domestication"
+df24$type2 <- "5%"
+df24$type3 <- "PS"
+
+df25 <- read.table('E:/02-群体进化/04-牛/covergent/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/cattle_selection_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df25$species <- "Cattle"
+df25$type1 <- "Domestication"
+df25$type2 <- "1%"
+df25$type3 <- "NS"
+
+df26 <- read.table('E:/02-群体进化/04-牛/covergent/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/cattle_selection_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df26$species <- "Cattle"
+df26$type1 <- "Domestication"
+df26$type2 <- "5%"
+df26$type3 <- "NS"
+
+df27 <- read.table('E:/02-群体进化/04-牛/covergent/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/cattle_selection_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df27$species <- "Cattle"
+df27$type1 <- "Domestication"
+df27$type2 <- "1%"
+df27$type3 <- "PS"
+
+df28 <- read.table('E:/02-群体进化/04-牛/covergent/10kb_window_5kb_step/DCMS-FST-PI-tajimaD-202504/regions/cattle_selection_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df28$species <- "Cattle"
+df28$type1 <- "Domestication"
+df28$type2 <- "5%"
+df28$type3 <- "PS"
+
+df29 <- read.table('E:/02-群体进化/06-羊/covergent/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/sheep_selection_neg_DCMS_top1_merged_regions.txt',sep = '\t')
+df29$species <- "Sheep"
+df29$type1 <- "Domestication"
+df29$type2 <- "1%"
+df29$type3 <- "NS"
+
+df30 <- read.table('E:/02-群体进化/06-羊/covergent/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/sheep_selection_neg_DCMS_top5_merged_regions.txt',sep = '\t')
+df30$species <- "Sheep"
+df30$type1 <- "Domestication"
+df30$type2 <- "5%"
+df30$type3 <- "NS"
+
+df31 <- read.table('E:/02-群体进化/06-羊/covergent/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/sheep_selection_pos_DCMS_top1_merged_regions.txt',sep = '\t')
+df31$species <- "Sheep"
+df31$type1 <- "Domestication"
+df31$type2 <- "1%"
+df31$type3 <- "PS"
+
+df32 <- read.table('E:/02-群体进化/06-羊/covergent/10kbwindow_5kbstep/DCMS-FST-PI-tajimaD-202504/regions/sheep_selection_pos_DCMS_top5_merged_regions.txt',sep = '\t')
+df32$species <- "Sheep"
+df32$type1 <- "Domestication"
+df32$type2 <- "5%"
+df32$type3 <- "PS"
+
+
+df <- rbind(df1,df2,df3,df4,
+            df5,df6,df7,df8,
+            df9,df10,df11,df12,
+            df13,df14,df15,df16,
+            df17,df18,df19,df20,
+            df21,df22,df23,df24,
+            df25,df26,df27,df28,
+            df29,df30,df31,df32)
+
+df$length <- df$V3 - df$V2
+df$Type <- paste0(df$type1,sep="-",df$type3)
+breaks <- c(0, 10000, 20000, 30000, 40000, 50000, 100000,Inf)
+labels <- c("0-10000", "10000-20000", "20000-30000", 
+            "30000-40000", "40000-50000", "50000-100000",">100000")
+df$Range <- cut(df[,8], 
+                       breaks = breaks, 
+                       labels = labels, 
+                       right = FALSE)  # 左闭右开区间
+
+chicken_genome <- 200044509	+152127819+112377238+91364047+59473047+36158469+36439816+29594148+23966833+
+  21606253+19822308+20591337+19253982+16259740+13529386+4932503+11322113+12199395+11295715+15361164+7106554+
+  5772503+6970121+8591846+4095597+6534586+6322964+5942585+6839231+3643476+5478923+3130476+4180360+4011625+
+  3056416+3424470+2501204+3700872
+pig_genome <- 274327039+151925050+132841994+130910870+104524876+170836345+121823490+
+  138963963+139499588+69358812+79162308+61601872+208321721+141745767+140410508+79944260+63486385+55972519
+cattle_genome <- 158972876+137479425+121888057+121284772+121584146+119927886+113155487+114055384+106206484+104654538+
+  107582167+91593655+84590997+85007120+85681136+82000027+75367154+66346785+64325510+72301449+71883091+61679430+52684911+
+  62911103+43100425+51889111+45695690+46481278+51869468
+sheep_genome <- 301310028+265688840+241140967+130071916+117625568+129788820+107697089+98768167+104713370+97206448+60977283+
+  84520005+87256641+71110528+90320817+78351213+82584647+70857294+62707585+55937558+52946817+55669323+68305172+43079387+47656618+49387814
+
+df <- df %>%
+  mutate(genome = case_when(
+    species == "Chicken" ~ chicken_genome,
+    species == "Cattle"  ~ cattle_genome,
+    species == "Sheep"   ~ sheep_genome,
+    species == "Pig"     ~ pig_genome,
+    TRUE ~ NA_integer_  
+  ))
+df$Prop <- df$length/df$genome
+
+
+# 1%
+res1 <- df[df$type2 == "1%",]
+res1$Range <- factor(res1$Range,levels = c("0-10000", "10000-20000", "20000-30000","30000-40000", "40000-50000", "50000-100000",">100000"))
+p1 <-ggplot(res1, aes(x = species, y = Prop, fill = Range)) +
+  geom_col(position = "stack") +
+  scale_fill_brewer(palette = "Blues", direction = -1,name = "Length Range") +
+  facet_wrap(~Type) +
+  scale_y_continuous(expand = c(0,0),limits = c(0,0.011))+
+  labs(x="",y="Proportion(%)")+
+  theme_bw()+
+  theme(panel.grid = element_blank())
+p1
+ggsave("4speceis_top1_prop.png",p1, dpi = 500,height = 8,width = 10)
+# 5%
+res2 <- df[df$type2 == "5%",]
+res2$Range <- factor(res2$Range,levels = c("0-10000", "10000-20000", "20000-30000","30000-40000", "40000-50000", "50000-100000",">100000"))
+p2 <-ggplot(res2, aes(x = species, y = Prop, fill = Range)) +
+  geom_col(position = "stack") +
+  scale_fill_brewer(palette = "Blues",direction = -1,name = "Length Range") +
+  facet_wrap(~Type) +
+  scale_y_continuous(expand = c(0,0),limits = c(0,0.059))+
+  labs(x="",y="Proportion(%)")+
+  theme_bw()+
+  theme(panel.grid = element_blank())
+p2
+ggsave("4speceis_top5_prop.png",p2, dpi = 500,height = 8,width = 10)
