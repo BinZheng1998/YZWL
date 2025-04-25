@@ -1,0 +1,110 @@
+import sys
+from collections import defaultdict
+
+def parse_gff(gff_file):
+    """解析GFF文件，增强染色体信息处理"""
+    gene_dict = defaultdict(list)
+    with open(gff_file, 'r') as f:
+        for line in f:
+            if line.startswith('#'):
+                continue
+            parts = line.strip().split('\t')
+            if len(parts) < 9 or parts[2].lower() != 'gene':
+                continue
+            
+            chrom = parts[0]
+            start = int(parts[3])
+            end = int(parts[4])
+            strand = parts[6]
+            attrs = {k:v for k,v in [item.split('=') for item in parts[8].split(';') if '=' in item]}
+            gene_id = attrs.get('ID', f'{chrom}_{start}_{end}')
+            
+            gene_dict[chrom].append((start, end, strand, gene_id))
+    return gene_dict
+
+def calculate_metrics(g1, g2):
+    """计算重叠特征和比例"""
+    g1_start, g1_end, g1_strand, g1_id = g1
+    g2_start, g2_end, g2_strand, g2_id = g2
+    
+    # 计算重叠区域
+    overlap_start = max(g1_start, g2_start)
+    overlap_end = min(g1_end, g2_end)
+    if overlap_start > overlap_end:
+        return None
+    
+    overlap_length = overlap_end - overlap_start + 1
+    
+    # 计算基因长度
+    g1_length = g1_end - g1_start + 1
+    g2_length = g2_end - g2_start + 1
+    
+    # 计算比例（带异常保护）
+    pct_gene1 = (overlap_length/g1_length)*100 if g1_length>0 else 0.0
+    pct_gene2 = (overlap_length/g2_length)*100 if g2_length>0 else 0.0
+    
+    # 判断关系类型
+    if (g1_start <= g2_start and g1_end >= g2_end) or (g2_start <= g1_start and g2_end >= g1_end):
+        relation = '包含' if g1_length > g2_length else '被包含'
+    else:
+        relation = '部分重叠'
+    
+    return (overlap_length, round(pct_gene1,2), round(pct_gene2,2), relation)
+
+def analyze_overlaps(gene_dict):
+    """执行染色体分析并生成结果"""
+    results = []
+    
+    for chrom, genes in gene_dict.items():
+        sorted_genes = sorted(genes, key=lambda x: x[0])
+        
+        for i in range(len(sorted_genes)):
+            g1 = sorted_genes[i]
+            for j in range(i+1, len(sorted_genes)):
+                g2 = sorted_genes[j]
+                
+                # 提前终止条件
+                if g2[0] > g1[1]:
+                    break
+                
+                # 链一致性检查
+                if g1[2] != g2[2]:
+                    continue
+                
+                # 执行计算
+                metrics = calculate_metrics(g1, g2)
+                if metrics:
+                    # 解包结果
+                    g1_info = (chrom, g1[3], g1[0], g1[1], g1[2])
+                    g2_info = (chrom, g2[3], g2[0], g2[1], g2[2])
+                    results.append( (*g1_info, *g2_info, *metrics) )
+    
+    return results
+
+def main():
+    if len(sys.argv) != 2:
+        print("使用方法：python gene_analyzer.py input.gff")
+        sys.exit(1)
+    
+    gene_data = parse_gff(sys.argv[1])
+    overlap_results = analyze_overlaps(gene_data)
+    
+    # 输出表头
+    header = [
+        "Gene1_Chrom", "Gene1_ID", "Gene1_Start", "Gene1_End", "Gene1_Strand",
+        "Gene2_Chrom", "Gene2_ID", "Gene2_Start", "Gene2_End", "Gene2_Strand",
+        "Overlap_Len", "Overlap%_Gene1", "Overlap%_Gene2", "Relationship"
+    ]
+    print('\t'.join(header))
+    
+    # 格式化输出
+    for record in overlap_results:
+        formatted = [
+            record[0], record[1], str(record[2]), str(record[3]), record[4],
+            record[5], record[6], str(record[7]), str(record[8]), record[9],
+            str(record[10]), f"{record[11]}%", f"{record[12]}%", record[13]
+        ]
+        print('\t'.join(formatted))
+
+if __name__ == "__main__":
+    main()
