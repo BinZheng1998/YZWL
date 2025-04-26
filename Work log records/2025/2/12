@@ -1,0 +1,36 @@
+library(scCATCH)
+library(dplyr)
+library(Seurat)
+
+df <- readRDS("../data/chicken_project/matrix/Normal/SC/E3.5.SC.merged.filter_norm_rs0.8.anno_250105.rds")
+
+cell2cluster <- read.csv("../data/E3.5.SC.recluster.cell2cluster.csv")
+colnames(cell2cluster)[1] <- "cell_ID"
+cell2cluster$sub_cluster <- paste(cell2cluster$cluster, cell2cluster$subcluster, sep = "-")
+
+df@meta.data$sub_cluster <- cell2cluster$sub_cluster[match(rownames(df@meta.data), cell2cluster$cell_ID)]
+
+cellmatch <- read.table("cellmatch.txt",header=T)
+cellmatch2 <- cellmatch[!grepl("Tongue|Oral cavity|Parotid gland|Gall bladder|Larynx|Mammary gland|Pleura|Taste bud|Peyer patch|Epidermis|Cerebellum|Inner nuclear layer of retina|Ganglion cell layer of retina|Colon epithelium|Cochlea|Basilar membrane|Peritoneal cavity|Yolk sac|Heart muscle|Ileum|Inner Ear|Mesonephros|Bronchiole|Neural tube|Mesenteric lymph node|Carotid artery|Aorta|Embryonic heart|Trachea|Fetal intestine|Fetal lung|Fetal stomach|Neonatal calvaria|Neonatal heart|Neonatal muscle|Neonatal rib|Neonatal skin|Neonatal pancreas",cellmatch$tissue),]
+tissue_name <-unique(cellmatch2$tissue)
+
+
+unique_clusters <- unique(df@meta.data$seurat_clusters)
+
+for (cluster in unique_clusters) {
+
+  #sub_df <- df[, df@meta.data$seurat_clusters == cluster]
+  sub_df <- subset(df,subset = seurat_clusters == cluster)
+
+  normalized_data <- sub_df[["RNA"]]@data
+  rownames(normalized_data) <- gsub("gene-", "", rownames(normalized_data))
+
+  obj <- createscCATCH(data = normalized_data, cluster = as.character(sub_df@meta.data$sub_cluster))
+
+  obj <- findmarkergene(obj, species = "Human", marker = cellmatch, tissue = tissue_name, use_method = 1)
+
+  obj <- findcelltype(obj)
+
+  write.table(obj@celltype, file = paste0("E3.5_cluster_", cluster, ".txt"), quote = FALSE, row.names = TRUE, col.names = TRUE)
+  print(paste("Analysis for cluster", cluster, "is complete and saved to cluster_", cluster, ".txt"))
+}
