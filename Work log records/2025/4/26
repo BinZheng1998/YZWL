@@ -1,3 +1,4 @@
 #
+#需要下载minimap2和transanno
 minimap2 -cx asm5 --cs chicken_6a.fa huxu.fa > 6a2huxu.paf
-transanno minimap2chain PAF_FILE.paf --output 6a2huxu.chain
+transanno minimap2chain 6a2huxu.paf --output 6a2huxu.chain
