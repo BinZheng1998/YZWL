@@ -1,4 +1,7 @@
 #
 #需要下载minimap2和transanno
+https://github.com/lh3/minimap2
+https://github.com/informationsea/transanno
+#代码
 minimap2 -cx asm5 --cs chicken_6a.fa huxu.fa > 6a2huxu.paf
 transanno minimap2chain 6a2huxu.paf --output 6a2huxu.chain
