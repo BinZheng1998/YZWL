@@ -1,0 +1,3 @@
+#
+minimap2 -cx asm5 --cs chicken_6a.fa huxu.fa > 6a2huxu.paf
+transanno minimap2chain PAF_FILE.paf --output 6a2huxu.chain
