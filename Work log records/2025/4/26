@@ -7,3 +7,6 @@ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
 minimap2 -cx asm5 --cs chicken_6a.fa huxu.fa > 6a2huxu.paf
 transanno minimap2chain 6a2huxu.paf --output 6a2huxu.chain
 liftOver input.bed 6a2huxu.chain output.bed umapped.bed
+
+#提取某区间的序列信息
+seqkit subseq -r 55690001:55700000 --chr 1 ~/ref/huxu_v23_ref/chicken.ref.fa -o chr1_55690001_55700000.fa
