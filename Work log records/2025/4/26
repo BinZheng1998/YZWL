@@ -6,4 +6,4 @@ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
 #代码
 minimap2 -cx asm5 --cs chicken_6a.fa huxu.fa > 6a2huxu.paf
 transanno minimap2chain 6a2huxu.paf --output 6a2huxu.chain
-liftOver input.bed 6a_query2huxu_ref_20250426.paf output.bed umapped.bed
+liftOver input.bed 6a2huxu.chain output.bed umapped.bed
