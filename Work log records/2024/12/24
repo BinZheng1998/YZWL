@@ -1,0 +1,8 @@
+library(RERconverge)
+setwd("E:/test/")
+estimatePhangornTreeAll(alndir = 'E:/test/gene',treefile = 'hg38.100way.nh',output.file = 'result')
+tree <- readTrees('result')
+res <- getAllResiduals(tree,transform = 'sqrt',weighted = T,scale = T)
+par(mfrow=c(1,1))
+phenvExample<-foreground2Paths(c("susScr3","bosTau8","oviAri3","canFam3","galGal4"),tree,clade="terminal")
+plotRers(res,"LCORL2",phenv=phenvExample) #plotRERs
