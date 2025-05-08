@@ -1,0 +1,23 @@
+# code 1
+# Reference Genome Path
+Ref_genome="/home/bzheng/others_species_analysis/cattle/ref/Btau_5.0.1_genome.fa"
+
+for chr in {1..29} X Y; do 
+    chr_script="chr${chr}.sh"
+
+    echo 'gatk --java-options "-Xmx400G" CombineGVCFs \' > "$chr_script"
+    echo '-R' ${Ref_genome} '\' >> "$chr_script"
+
+    for i in ../*.raw.snps.indels.g.vcf; do
+        if [ -f "$i" ]; then  
+            echo '--variant '${i}' \' >> "$chr_script"
+        else
+            echo "Warning: No GVCF files found for chromosome ${chr}."
+        fi
+    done
+
+    echo '-L 'chr${chr}' \' >> "$chr_script"
+    echo '-O 'chr${chr}.g.vcf.gz'' >> "$chr_script"
+done
+
+
