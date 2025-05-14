@@ -1,1 +1,66 @@
+import sys
 
+def modify_rna_names(input_file, output_file):
+    # 定义目标RNA类型列表
+    rna_types = {'mRNA', 'lnc_RNA', 'ncRNA', 'rRNA', 'snoRNA', 'snRNA', 'SRP_RNA', 'tRNA'}
+    
+    with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+        for line in f_in:
+            # 保留注释行（以#开头）
+            if line.startswith('#'):
+                f_out.write(line)
+                continue
+            
+            columns = line.strip().split('\t')
+            if len(columns) < 9:
+                f_out.write(line)
+                continue
+            
+            # 检查第3列是否为目标RNA类型
+            if columns[2] in rna_types:
+                attributes = columns[8]
+                if 'Name=' not in attributes:  # 仅处理无Name的行
+                    attr_parts = []
+                    id_value = None
+                    parent_value = None
+                    
+                    # 解析属性键值对
+                    for part in attributes.split(';'):
+                        part = part.strip()
+                        if not part:
+                            continue
+                        if '=' in part:
+                            key, value = part.split('=', 1)
+                            key = key.strip()
+                            value = value.strip()
+                            if key == 'ID':
+                                id_value = value
+                            elif key == 'Parent':
+                                parent_value = value
+                            attr_parts.append(f"{key}={value}")
+                        else:
+                            attr_parts.append(part)  # 保留无键值对的属性（如注释）
+                    
+                    # 添加Name=Parent_value（需同时存在ID和Parent）
+                    if id_value and parent_value:
+                        new_attrs = []
+                        inserted = False
+                        for attr in attr_parts:
+                            new_attrs.append(attr)
+                            if attr.startswith('ID=') and not inserted:
+                                new_attrs.append(f'Name={parent_value}')
+                                inserted = True
+                        attributes = ';'.join(new_attrs)
+                    
+                    # 更新第9列
+                    columns[8] = attributes
+            
+            # 写入行（无论是否修改）
+            f_out.write('\t'.join(columns) + '\n')
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python modify_rna_names.py input.gff output.gff")
+        sys.exit(1)
+    
+    modify_rna_names(sys.argv[1], sys.argv[2])
