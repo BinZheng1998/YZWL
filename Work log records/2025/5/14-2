@@ -1,0 +1,65 @@
+import sys
+
+def modify_mt_gene_names(input_file, output_file):
+    with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+        for line in f_in:
+            # 保留注释行（以#开头）
+            if line.startswith('#'):
+                f_out.write(line)
+                continue
+            
+            columns = line.strip().split('\t')
+            if len(columns) < 9:
+                f_out.write(line)
+                continue
+            
+            # 筛选第1列为chrMT且第3列为gene的行
+            if columns[0] == 'chrMT' and columns[2] == 'gene':
+                attributes = columns[8]
+                attr_pairs = []
+                id_value = None
+                name_value = None
+                modified = False
+                
+                # 解析属性键值对
+                for part in attributes.split(';'):
+                    part = part.strip()
+                    if not part:
+                        continue
+                    if '=' not in part:
+                        attr_pairs.append(part)  # 保留无键值对的属性（如注释）
+                        continue
+                    key, value = part.split('=', 1)
+                    key = key.strip()
+                    value = value.strip()
+                    
+                    if key == 'ID':
+                        id_value = value
+                    elif key == 'Name':
+                        name_value = value
+                    attr_pairs.append((key, value))
+                
+                # 检查Name和ID是否不一致
+                if id_value and name_value and (name_value != id_value):
+                    # 重建属性列，替换Name的值
+                    new_attr_pairs = []
+                    for key, value in attr_pairs:
+                        if key == 'Name':
+                            new_attr_pairs.append(('Name', id_value))  # 强制Name=ID
+                            modified = True
+                        else:
+                            new_attr_pairs.append((key, value))
+                    
+                    if modified:
+                        # 重新拼接属性列
+                        columns[8] = ';'.join([f"{k}={v}" for k, v in new_attr_pairs])
+            
+            # 写入行（无论是否修改）
+            f_out.write('\t'.join(columns) + '\n')
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python modify_mt_gene_names.py input.gff output.gff")
+        sys.exit(1)
+    
+    modify_mt_gene_names(sys.argv[1], sys.argv[2])
