@@ -1,0 +1,116 @@
+import sys
+from collections import defaultdict
+
+# 解析GFF文件的第9列属性
+def parse_attributes(attr_str):
+    attrs = {}
+    for attr in attr_str.split(';'):
+        if '=' in attr:
+            key, value = attr.split('=', 1)
+            attrs[key.strip()] = value.strip()
+    return attrs
+
+# 解析GFF文件，返回genes和mRNAs信息
+def parse_gff(gff_file):
+    genes = defaultdict(lambda: {'chrom': '', 'strand': '', 'mRNAs': []})
+    mRNAs = defaultdict(lambda: {'gene': '', 'exons': []})
+    
+    with open(gff_file, 'r') as f:
+        for line in f:
+            if line.startswith('#'):
+                continue
+            cols = line.strip().split('\t')
+            if len(cols) != 9:
+                continue
+            chrom, _, feature, start, end, _, strand, _, attributes = cols
+            start = int(start)
+            end = int(end)
+            attrs = parse_attributes(attributes)
+            
+            if feature == 'gene':
+                gene_id = attrs.get('ID')
+                if gene_id:
+                    genes[gene_id]['chrom'] = chrom
+                    genes[gene_id]['strand'] = strand
+            elif feature == 'mRNA':
+                mRNA_id = attrs.get('ID')
+                parent_gene_id = attrs.get('Parent')
+                if mRNA_id and parent_gene_id:
+                    mRNAs[mRNA_id]['gene'] = parent_gene_id
+                    genes[parent_gene_id]['mRNAs'].append(mRNA_id)
+            elif feature == 'exon':
+                parent_mRNA_id = attrs.get('Parent')
+                exon_id = attrs.get('ID')  # 使用原始ID，如果没有则为None
+                if parent_mRNA_id and exon_id:  # 只处理有ID的exon
+                    mRNAs[parent_mRNA_id]['exons'].append((start, end, exon_id))
+    
+    return genes, mRNAs
+
+# 主函数，处理GFF文件并检测重叠
+def main(gff_file, out_file):
+    # 解析GFF文件
+    genes, mRNAs = parse_gff(gff_file)
+    
+    # 按(染色体, 链)分组exon
+    exons_by_chrom_strand = defaultdict(list)
+    for mRNA_id, mRNA_data in mRNAs.items():
+        gene_id = mRNA_data['gene']
+        chrom = genes[gene_id]['chrom']
+        strand = genes[gene_id]['strand']
+        exons = mRNA_data['exons']
+        for start, end, exon_id in exons:
+            exons_by_chrom_strand[(chrom, strand)].append((start, end, gene_id, mRNA_id, exon_id))
+    
+    # 对每个组的exon按起始位置排序
+    for key in exons_by_chrom_strand:
+        exons_by_chrom_strand[key].sort(key=lambda x: x[0])
+    
+    # 检测重叠并输出结果
+    with open(out_file, 'w') as out:
+        # 写入表头
+        header = ("Chrom\tStrand\tGene1_ID\tExon1_ID\tExon1_Start\tExon1_End\t"
+                  "Gene2_ID\tExon2_ID\tExon2_Start\tExon2_End\tOverlap_Length\t"
+                  "Overlap_Percent_Gene1\tOverlap_Percent_Gene2\tOverlap_Type\n")
+        out.write(header)
+        
+        for (chrom, strand), exons in exons_by_chrom_strand.items():
+            n = len(exons)
+            for i in range(n):
+                start_i, end_i, gene_i, mRNA_i, exon_id_i = exons[i]
+                j = i + 1
+                while j < n and exons[j][0] <= end_i:
+                    start_j, end_j, gene_j, mRNA_j, exon_id_j = exons[j]
+                    if gene_i != gene_j:  # 确保来自不同基因
+                        overlap_start = max(start_i, start_j)
+                        overlap_end = min(end_i, end_j)
+                        overlap_length = max(0, overlap_end - overlap_start + 1)
+                        if overlap_length > 0:
+                            exon_i_length = end_i - start_i + 1
+                            exon_j_length = end_j - start_j + 1
+                            percent_i = (overlap_length / exon_i_length) * 100
+                            percent_j = (overlap_length / exon_j_length) * 100
+                            
+                            # 判断重叠类型
+                            if overlap_length == exon_i_length and overlap_length == exon_j_length:
+                                overlap_type = "complete"
+                            elif overlap_length == exon_i_length:
+                                overlap_type = "contained"  # exon_i 被 exon_j 包含
+                            elif overlap_length == exon_j_length:
+                                overlap_type = "contains"  # exon_i 包含 exon_j
+                            else:
+                                overlap_type = "partial"
+                            
+                            # 写入结果
+                            out.write(f"{chrom}\t{strand}\t{gene_i}\t{exon_id_i}\t{start_i}\t{end_i}\t"
+                                      f"{gene_j}\t{exon_id_j}\t{start_j}\t{end_j}\t{overlap_length}\t"
+                                      f"{percent_i:.2f}\t{percent_j:.2f}\t{overlap_type}\n")
+                    j += 1
+
+# 命令行入口
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python test.py input.gff out.txt")
+        sys.exit(1)
+    gff_file = sys.argv[1]
+    out_file = sys.argv[2]
+    main(gff_file, out_file)
