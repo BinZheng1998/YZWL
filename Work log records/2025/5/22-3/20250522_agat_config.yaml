@@ -70,7 +70,7 @@ check_sequential: true
 check_l2_linked_to_l3: true
 check_l1_linked_to_l2: true
 remove_orphan_l1: true
-check_all_level3_locations: false
+check_all_level3_locations: true
 check_cds: true
 check_exons: true
 check_utrs: true
