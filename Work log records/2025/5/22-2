@@ -1,0 +1,3 @@
+nohup liftoff -g GRCg7b_chr16_25.gff -o 20250522_huxu_chr16_25.gff -p 24 -polish -copies -sc 0.9 -f ../20250521_7b_gff_features.txt -u 20250522_chr16_25_unmapped.txt -s 0.8 ../huxu.fa ../GRCg7b.fa 2> 20250522_chr16_25-7b-huxu.log &
+nohup liftoff -g GRCg7b_chr16_25.gff -o 20250522_huxu_chr16_25.gff -p 24 -polish -copies -sc 0.9 -f ../20250521_7b_gff_features.txt -u 20250522_chr16_25_unmapped.txt -s 0.5 ../huxu.fa ../GRCg7b.fa 2> 20250522_chr16_25-7b-huxu.log &
+nohup liftoff -g GRCg7b_chr16_25.gff -o 20250522_huxu_chr16_25.gff -p 24 -polish -copies -sc 0.5 -f ../20250521_7b_gff_features.txt -u 20250522_chr16_25_unmapped.txt -s 0.5 ../huxu.fa ../GRCg7b.fa 2> 20250522_chr16_25-7b-huxu.log &
