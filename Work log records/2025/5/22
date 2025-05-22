@@ -1,0 +1,73 @@
+import sys
+from collections import defaultdict
+
+def parse_attributes(attr_str):
+    """解析attributes列，返回键值对字典"""
+    attrs = {}
+    for attr in attr_str.split(';'):
+        if '=' in attr:
+            key, value = attr.split('=', 1)
+            attrs[key.strip()] = value.strip()
+    return attrs
+
+def main(gff_file, out_file):
+    # 存储gene信息的字典
+    genes = {}
+    # 存储RNA位置的字典，以gene ID为键
+    rna_positions = defaultdict(list)
+
+    # 读取GFF文件
+    with open(gff_file, 'r') as f:
+        for line in f:
+            if line.startswith('#'):  # 跳过注释行
+                continue
+            cols = line.strip().split('\t')
+            if len(cols) != 9:  # 确保是有效的GFF行
+                continue
+            seqid, _, feature, start, end, _, _, _, attributes = cols
+            start = int(start)  # 转换为整数
+            end = int(end)
+            attrs = parse_attributes(attributes)
+
+            # 处理gene行
+            if feature == 'gene':
+                gene_id = attrs.get('ID')
+                if gene_id:
+                    genes[gene_id] = {'seqid': seqid, 'start': start, 'end': end}
+            # 处理RNA和transcript行（修改部分）
+            elif 'rna' in feature.lower() or 'transcript' in feature.lower():  # 例如mRNA、tRNA、rRNA、transcript等
+                parent = attrs.get('Parent')
+                if parent:
+                    rna_positions[parent].append((start, end))
+
+    # 写入结果到输出文件
+    with open(out_file, 'w') as out:
+        # 写入表头
+        out.write("Gene_ID\tSeqID\tGene_Start\tGene_End\tRNA_Min_Start\tRNA_Max_End\tConsistent\n")
+        # 检查每个gene
+        for gene_id, gene_data in genes.items():
+            if gene_id in rna_positions:
+                # 获取所有RNA的start和end
+                rna_starts = [pos[0] for pos in rna_positions[gene_id]]
+                rna_ends = [pos[1] for pos in rna_positions[gene_id]]
+                min_rna_start = min(rna_starts) if rna_starts else None
+                max_rna_end = max(rna_ends) if rna_ends else None
+                # 检查位置是否一致
+                consistent = (gene_data['start'] == min_rna_start and 
+                             gene_data['end'] == max_rna_end)
+                out.write(f"{gene_id}\t{gene_data['seqid']}\t{gene_data['start']}\t{gene_data['end']}\t"
+                          f"{min_rna_start if min_rna_start is not None else 'N/A'}\t"
+                          f"{max_rna_end if max_rna_end is not None else 'N/A'}\t"
+                          f"{'Yes' if consistent else 'No'}\n")
+            else:
+                # 如果gene没有对应的RNA行
+                out.write(f"{gene_id}\t{gene_data['seqid']}\t{gene_data['start']}\t{gene_data['end']}\t"
+                          f"N/A\tN/A\tNo\n")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("用法: python check_gene_rna_positions.py input.gff output.txt")
+        sys.exit(1)
+    gff_file = sys.argv[1]  # 输入的GFF文件
+    out_file = sys.argv[2]  # 输出的结果文件
+    main(gff_file, out_file)
