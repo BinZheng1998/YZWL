@@ -1,0 +1,1 @@
+agat_convert_sp_gxf2gxf.pl -g 20250522_STRG.gff -o 20250522_STRG_agat.gff
