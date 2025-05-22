@@ -1,0 +1,2 @@
+cat 20250521_huxu_1.00.gff_polished 20250522_STRG_agat.gff > 20250522_huxu_STRG.gff
+agat_convert_sp_gxf2gxf.pl -g 20250522_huxu_STRG.gff -o 20250522_huxu_STRG_final.gff
