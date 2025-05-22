@@ -1,0 +1,13 @@
+C_gene_segment
+lnc_RNA
+miRNA
+ncRNA
+primary_transcript
+pseudogene
+rRNA
+snoRNA
+snRNA
+SRP_RNA
+telomerase_RNA
+tRNA
+V_gene_segment
