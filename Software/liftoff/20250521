@@ -1,0 +1,1 @@
+liftoff -g GRCg7b.gff -o 20250521_huxu_1.00.gff -p 18 -polish -copies -sc 1 -f 20250521_7b_gff_features.txt -u 20250521_7b-huxu_unmapped_1.00_gene.txt huxu.fa GRCg7b.fa 2>20250521_7b-huxu-1.00.log &
