@@ -1,0 +1,71 @@
+import sys
+
+def parse_attributes(attr_str):
+    """将属性字符串解析为字典。
+    
+    参数:
+        attr_str (str): GTF 文件第9列的属性字符串，例如 'gene_id "STRG"; transcript_id "STRG.111";'
+    
+    返回:
+        dict: 包含键值对的字典，例如 {'gene_id': 'STRG', 'transcript_id': 'STRG.111'}
+    """
+    attrs = {}
+    parts = attr_str.split(';')
+    for part in parts:
+        part = part.strip()
+        if part:  # 确保部分不为空
+            key_value = part.split(' ', 1)  # 按第一个空格分割
+            if len(key_value) == 2:
+                key = key_value[0]
+                value = key_value[1].strip('"')  # 移除值的双引号
+                attrs[key] = value
+    return attrs
+
+def modify_attributes(attr_str):
+    """修改属性字符串，添加 gene_name 和 transcript_name，并移除其他属性。
+    
+    参数:
+        attr_str (str): 原始的属性字符串
+    
+    返回:
+        str: 修改后的属性字符串，例如 'gene_id "STRG"; gene_name "STRG"; transcript_id "STRG.111"; transcript_name "STRG.111";'
+    """
+    attrs = parse_attributes(attr_str)
+    gene_id = attrs.get('gene_id')
+    transcript_id = attrs.get('transcript_id')
+    
+    if gene_id:  # 如果存在 gene_id
+        gene_name = gene_id
+        new_attrs = f'gene_id "{gene_id}"; gene_name "{gene_name}";'
+        if transcript_id:  # 如果存在 transcript_id
+            transcript_name = transcript_id
+            new_attrs += f' transcript_id "{transcript_id}"; transcript_name "{transcript_name}";'
+        return new_attrs
+    else:
+        return attr_str  # 如果没有 gene_id，保持原样
+
+def main(input_file, output_file):
+    """读取输入 GTF 文件，修改第9列，并写入输出文件。
+    
+    参数:
+        input_file (str): 输入 GTF 文件路径
+        output_file (str): 输出 GTF 文件路径
+    """
+    with open(input_file, 'r') as fin, open(output_file, 'w') as fout:
+        for line in fin:
+            columns = line.strip().split('\t')
+            if len(columns) >= 9:  # 确保有第9列
+                new_attr = modify_attributes(columns[8])
+                columns[8] = new_attr
+                new_line = '\t'.join(columns) + '\n'
+                fout.write(new_line)
+            else:
+                fout.write(line)  # 如果列数不足，保持原样
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("使用方法: python modify_gtf.py input.gtf output.gtf")
+        sys.exit(1)
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    main(input_file, output_file)
