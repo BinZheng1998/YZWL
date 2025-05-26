@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+
+import argparse
+from collections import defaultdict
+import re
+
+def parse_gtf(gtf_file):
+    """
+    解析 GTF 文件，提取染色体、基因、转录本、外显子和 CDS 信息。
+    
+    参数:
+        gtf_file (str): GTF 文件路径
+        
+    返回:
+        chromosomes (dict): chr -> list of transcript_ids
+        genes (dict): gene_id -> (chr, start, end)
+        transcripts (dict): transcript_id -> (gene_id, start, end)
+        exons (defaultdict): transcript_id -> [(start, end), ...]
+        cds (defaultdict): transcript_id -> [(start, end), ...]
+    """
+    chromosomes = defaultdict(list)
+    genes = {}
+    transcripts = {}
+    exons = defaultdict(list)
+    cds = defaultdict(list)
+
+    with open(gtf_file, 'r') as f:
+        for line in f:
+            if line.startswith('#'):  # 跳过注释行
+                continue
+            fields = line.strip().split('\t')
+            if len(fields) < 9:  # 确保行有足够的列
+                continue
+
+            chr_ = fields[0]  # 第1列：染色体号
+            feature = fields[2]  # 第3列：特征类型
+            start = int(fields[3])  # 第4列：开始位置
+            end = int(fields[4])  # 第5列：结束位置
+            attributes = fields[8]  # 第9列：属性
+
+            # 提取 gene_id 和 transcript_id
+            gene_id_match = re.search(r'gene_id "([^"]+)"', attributes)
+            transcript_id_match = re.search(r'transcript_id "([^"]+)"', attributes)
+            gene_id = gene_id_match.group(1) if gene_id_match else None
+            transcript_id = transcript_id_match.group(1) if transcript_id_match else None
+
+            if feature == 'gene' and gene_id:
+                genes[gene_id] = (chr_, start, end)
+            elif feature == 'transcript' and transcript_id and gene_id:
+                transcripts[transcript_id] = (gene_id, start, end)
+                chromosomes[chr_].append(transcript_id)
+            elif feature == 'exon' and transcript_id:
+                exons[transcript_id].append((start, end))
+            elif feature == 'CDS' and transcript_id:
+                cds[transcript_id].append((start, end))
+
+    # 对 exon 和 CDS 按开始位置排序，确保比较一致性
+    for tid in exons:
+        exons[tid].sort()
+    for tid in cds:
+        cds[tid].sort()
+
+    return chromosomes, genes, transcripts, exons, cds
+
+def compare_transcripts(chromosomes, genes, transcripts, exons, cds):
+    """
+    比较同一条染色体上的转录本，找出位置相同的对。
+    
+    参数:
+        chromosomes (dict): chr -> list of transcript_ids
+        genes (dict): gene_id -> (chr, start, end)
+        transcripts (dict): transcript_id -> (gene_id, start, end)
+        exons (defaultdict): transcript_id -> [(start, end), ...]
+        cds (defaultdict): transcript_id -> [(start, end), ...]
+        
+    返回:
+        results (list): 包含满足条件的转录本对信息的列表
+    """
+    results = []
+
+    for chr_, transcript_list in chromosomes.items():
+        for i, tid1 in enumerate(transcript_list):
+            for tid2 in transcript_list[i+1:]:  # 避免自比较和重复
+                # 检查转录本开始和结束位置是否相同
+                if transcripts[tid1][1:] != transcripts[tid2][1:]:
+                    continue
+
+                # 获取基因和位置信息
+                gene_id1 = transcripts[tid1][0]
+                gene_id2 = transcripts[tid2][0]
+                gene_chr1, gene_start1, gene_end1 = genes[gene_id1]
+                gene_chr2, gene_start2, gene_end2 = genes[gene_id2]
+                transcript_start1, transcript_end1 = transcripts[tid1][1:]
+                transcript_start2, transcript_end2 = transcripts[tid2][1:]
+
+                # 格式化 exon 和 CDS 位置
+                exons1_str = ';'.join(f'{s}-{e}' for s, e in exons[tid1]) if exons[tid1] else 'N/A'
+                cds1_str = ';'.join(f'{s}-{e}' for s, e in cds[tid1]) if cds[tid1] else 'N/A'
+                exons2_str = ';'.join(f'{s}-{e}' for s, e in exons[tid2]) if exons[tid2] else 'N/A'
+                cds2_str = ';'.join(f'{s}-{e}' for s, e in cds[tid2]) if cds[tid2] else 'N/A'
+
+                # 判断特征是否相同
+                gene_identical = 'yes' if (gene_start1, gene_end1) == (gene_start2, gene_end2) else 'no'
+                transcript_identical = 'yes'  # 由于筛选条件，始终为 yes
+                exon_identical = 'NA'
+                cds_identical = 'NA'
+
+                # 检查 exon 是否相同（仅当两个转录本都有 exon 时比较）
+                if exons[tid1] and exons[tid2]:
+                    exon_identical = 'yes' if exons[tid1] == exons[tid2] else 'no'
+                elif not exons[tid1] and not exons[tid2]:
+                    exon_identical = 'yes'  # 两者都无 exon，视为相同
+                # 否则为 NA（一个有 exon，另一个无 exon）
+
+                # 检查 CDS 是否相同（仅当两个转录本都有 CDS 时比较）
+                if cds[tid1] and cds[tid2]:
+                    cds_identical = 'yes' if cds[tid1] == cds[tid2] else 'no'
+                elif not cds[tid1] and not cds[tid2]:
+                    cds_identical = 'yes'  # 两者都无 CDS，视为相同
+                # 否则为 NA（一个有 CDS，另一个无 CDS）
+
+                # 收集结果，按 17 列格式
+                result = [
+                    chr_,
+                    gene_id1,
+                    f"{gene_start1}-{gene_end1}",
+                    tid1,
+                    f"{transcript_start1}-{transcript_end1}",
+                    exons1_str,
+                    cds1_str,
+                    gene_id2,
+                    f"{gene_start2}-{gene_end2}",
+                    tid2,
+                    f"{transcript_start2}-{transcript_end2}",
+                    exons2_str,
+                    cds2_str,
+                    gene_identical,
+                    transcript_identical,
+                    exon_identical,
+                    cds_identical
+                ]
+                results.append(result)
+
+    return results
+
+def write_output(results, output_file):
+    """
+    将结果写入输出文件。
+    
+    参数:
+        results (list): 结果列表
+        output_file (str): 输出文件路径
+    """
+    with open(output_file, 'w') as f:
+        header = [
+            "Chromosome", "Gene1_ID", "Gene1_Position", "Transcript1_ID", "Transcript1_Position",
+            "Transcript1_Exons", "Transcript1_CDS", "Gene2_ID", "Gene2_Position",
+            "Transcript2_ID", "Transcript2_Position", "Transcript2_Exons", "Transcript2_CDS",
+            "Gene_Identical", "Transcript_Identical", "Exon_Identical", "CDS_Identical"
+        ]
+        f.write('\t'.join(header) + '\n')
+        for result in results:
+            f.write('\t'.join(result) + '\n')
+
+def main():
+    """主函数，处理命令行参数并执行分析"""
+    parser = argparse.ArgumentParser(description="检测 GTF 文件中同一条染色体上位置相同的转录本对")
+    parser.add_argument("gtf_file", help="输入的 GTF 文件路径")
+    parser.add_argument("-o", "--output", default="identical_transcripts.txt",
+                        help="输出文件路径（默认：identical_transcripts.txt）")
+    args = parser.parse_args()
+
+    # 执行解析、比较和输出
+    chromosomes, genes, transcripts, exons, cds = parse_gtf(args.gtf_file)
+    results = compare_transcripts(chromosomes, genes, transcripts, exons, cds)
+    write_output(results, args.output)
+    print(f"分析完成，结果已写入 {args.output}")
+
+if __name__ == "__main__":
+    main()
