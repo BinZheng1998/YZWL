@@ -1,0 +1,63 @@
+import sys
+
+def modify_gff(input_file, output_file):
+    with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+        for line in f_in:
+            # 保留注释行
+            if line.startswith('#'):
+                f_out.write(line)
+                continue
+            
+            columns = line.strip().split('\t')
+            if len(columns) < 9:
+                f_out.write(line)
+                continue
+            
+            source = columns[1]
+            feature_type = columns[2]
+            
+            # 同时处理gene和mRNA类型
+            if source == 'transdecoder' and feature_type in ['gene', 'mRNA']:
+                attributes = columns[8]
+                attr_pairs = []
+                id_value = None
+                
+                # 解析属性键值对
+                for part in attributes.split(';'):
+                    part = part.strip()
+                    if not part or '=' not in part:
+                        continue
+                    key, value = part.split('=', 1)
+                    key = key.strip()
+                    value = value.strip()
+                    
+                    if key == 'ID':
+                        id_value = value
+                    attr_pairs.append((key, value))
+                
+                # 修改属性
+                new_attr_pairs = []
+                name_exists = False
+                for key, value in attr_pairs:
+                    if key == 'Name':
+                        new_attr_pairs.append(('Name_raw', value))  # 重命名Name
+                        name_exists = True
+                    else:
+                        new_attr_pairs.append((key, value))
+                
+                # 添加新的Name=ID
+                if id_value:
+                    new_attr_pairs.append(('Name', id_value))
+                
+                # 重建属性列
+                columns[8] = ';'.join([f"{k}={v}" for k, v in new_attr_pairs])
+            
+            # 写入修改后的行
+            f_out.write('\t'.join(columns) + '\n')
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python modify_gff.py input.gff output.gff")
+        sys.exit(1)
+    
+    modify_gff(sys.argv[1], sys.argv[2])
