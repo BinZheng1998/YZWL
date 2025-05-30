@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# 脚本用法：bash gemone2read.sh input.fasta
+# 功能：将输入基因组fasta文件切割为100bp窗口（步长5bp）并提取序列
+
+# -------------------------------------------------------------------
+# 参数检查
+# -------------------------------------------------------------------
+if [ $# -ne 1 ]; then
+  echo "Error: 需要1个参数（输入fasta文件）"
+  echo "Usage: $0 input.fasta"
+  exit 1
+fi
+
+input_fasta="$1"
+base_name=$(basename "$input_fasta" .fasta)  # 去除.fasta后缀
+
+# -------------------------------------------------------------------
+# 检查输入文件是否存在
+# -------------------------------------------------------------------
+if [ ! -f "$input_fasta" ]; then
+  echo "Error: 输入文件 $input_fasta 不存在"
+  exit 1
+fi
+
+# -------------------------------------------------------------------
+# 主流程
+# -------------------------------------------------------------------
+# Step 1: 生成索引文件
+seqkit faidx "$input_fasta"
+
+# Step 2: 提取染色体信
+
+cut -f1,2 "${input_fasta}.fai" > "${base_name}.txt"
+
+# Step 3: 生成滑动窗口
+bedtools makewindows -g "${base_name}.txt" -w 100 -s 5 > "${base_name}_window.bed"
+
+# Step 4: 提取窗口序列
+bedtools getfasta -fi "$input_fasta" -bed "${base_name}_window.bed" -fo "${base_name}_window.fasta"
+
+echo "完成！输出文件：${base_name}_window.fasta"
