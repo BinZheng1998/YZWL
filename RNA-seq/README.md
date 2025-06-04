@@ -1,6 +1,6 @@
 # RNA-seq
 # Step1 
-  use find_fastq.py find fastq.gz/fq.gz files in target folder
+  Use find_fastq.py find fastq.gz/fq.gz files in target folder  
   command : 
   ```
   python find_fastq.py /path/to/target_folder
