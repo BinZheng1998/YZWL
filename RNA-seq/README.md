@@ -7,7 +7,7 @@
   ```
 will create a file(fastq_files_list.txt) like :
 |fastq1 | fastq2 |
-|-----:|-----------|
+|---|---|
 |/path/to/input_1.fq.gz|/path/to/input_2.fq.gz|
 |/path/to/input.fq.gz||
 |/path/to/input_1.fastq.gz|/path/to/input_2.fastq.gz|
