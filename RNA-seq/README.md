@@ -1,6 +1,11 @@
 # RNA-seq and fusion
 ## Step1
 Create two conda environments, rnaseq and fusion. you can use the appropriate yaml files.
+command:
+```
+conda env create -n rnaseq --file rnaseq_conda_environment.yml
+conda env create -n fusion --file fusion_conda_environment.yml
+```
 ## Step2
   Use find_fastq.py find fastq.gz/fq.gz files in target folder  
   command : 
@@ -21,7 +26,7 @@ command:
 ```
 python run.py --input-fastq-file fastq_files_list.txt --sample-numbers 8 --rnaseq yes --fusion yes
 
---input-fastq-file : pleasr see step1  
+--input-fastq-file : please see step2  
 --sample-numbers : Number of samples in parallel  
 --rnaseq Perform : rnaseq analysis  
 --fusion Perform : fusion analysis([arriba](https://github.com/suhrig/arriba))  
