@@ -1,0 +1,51 @@
+name: fusion
+channels:
+  - bioconda/label/cf201901
+  - bioconda
+  - defaults
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bedtools=2.31.1=hf5e1c6e_1
+  - blat=35=1
+  - bwa=0.7.18=he4a0461_0
+  - bzip2=1.0.8=h5eee18b_6
+  - c-ares=1.28.1=hd590300_0
+  - ca-certificates=2024.7.2=h06a4308_0
+  - fastp=0.23.4=h125f33a_5
+  - gdbm=1.18=hd4cb3f1_4
+  - gffread=0.12.7=hdcf5f25_4
+  - htslib=1.17=h6bc39ce_1
+  - isa-l=2.31.0=h4bc722e_2
+  - keyutils=1.6.1=h166bdaf_0
+  - krb5=1.20.1=h568e23c_1
+  - libcurl=7.88.1=h91b91d3_2
+  - libdb=6.2.32=h6a678d5_1
+  - libdeflate=1.20=hd590300_0
+  - libedit=3.1.20230828=h5eee18b_0
+  - libev=4.33=h7f8727e_1
+  - libgcc=7.2.0=h69d50b8_2
+  - libgcc-ng=14.1.0=h77fa898_0
+  - libgomp=14.1.0=h77fa898_0
+  - libnghttp2=1.52.0=ha637b67_1
+  - libnsl=2.0.0=h5eee18b_0
+  - libpng=1.6.43=h2797004_0
+  - libssh2=1.10.0=h37d81fd_2
+  - libstdcxx-ng=14.1.0=hc0a3c3a_0
+  - libuuid=1.41.5=h5eee18b_0
+  - libzlib=1.2.13=h4ab18f5_6
+  - mysql-connector-c=6.1.6=2
+  - ncurses=6.5=h59595ed_0
+  - openssl=1.1.1w=h7f8727e_0
+  - perl=5.32.1=0_h5eee18b_perl5
+  - perl-db-file=1.855=pl5321h779adbc_1
+  - readline=8.2=h5eee18b_0
+  - samtools=0.1.19=h50ea8bc_11
+  - seqtk=1.4=he4a0461_2
+  - star=2.7.11a=h0033a41_0
+  - ucsc-gff3togenepred=357=0
+  - xz=5.2.10=h5eee18b_1
+  - zlib=1.2.13=h4ab18f5_6
+  - zstd=1.5.6=ha6fb4c9_0
+prefix: /home/software/miniconda3/envs/fusion
