@@ -1,5 +1,7 @@
-# RNA-seq
-## Step1 
+# RNA-seq and fusion
+## Step1
+Create two conda environments, rnaseq and fusion. you can use the appropriate yaml files.
+## Step2
   Use find_fastq.py find fastq.gz/fq.gz files in target folder  
   command : 
   ```
@@ -13,7 +15,7 @@ will create a file(fastq_files_list.txt) like :
 |/path/to/input_1.fastq.gz|/path/to/input_2.fastq.gz|
 |/path/to/input.fastq.gz||
 
-## Step2
+## Step3
 use run.py to analysis RNA-seq fastq data  
 command:
 ```
