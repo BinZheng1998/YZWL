@@ -1,6 +1,6 @@
 #usage
 ```
-python extract.py input.txt ref.gff 0kb ./output.gene 
+python extract.py input.txt ref.gff/gtf 0kb ./output.gene 
 ```
 #input.bed  
 |chr|start|end|
