@@ -1,4 +1,4 @@
-#usage
+# get gene from gff/gtf
 ```
 python extract.py input.txt ref.gff/gtf 0kb ./output.gene 
 ```
@@ -15,3 +15,13 @@ python extract.py input.txt ref.gff/gtf 0kb ./output.gene
 |chr1|3270001|3285000|
 |chr1|3615001|3630000|
 |chr1|3735001|3745000|
+
+# get genes from 5species gtf/gff
+Usage
+```
+用法: get_genes_202506.sh --input <输入文件> [选项]
+选项:
+  --input    输入文件路径（必需）
+  --species  物种（cattle/dog/pig/sheep/chicken）[默认: cattle]
+  --output   输出目录路径 [默认: 当前目录]
+```
