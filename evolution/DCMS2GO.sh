@@ -39,4 +39,4 @@ do
   echo "完成: $prefix"
   echo "-----------------------------"
 
-done < 20250607_DCMS.txt
+done < DCMS2GO_input.txt
