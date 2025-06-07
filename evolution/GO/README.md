@@ -1,6 +1,6 @@
 # GO analysis for 5 species
 ```
-Usage: GO_20250607.r [options]
+Usage: /usr/bin/Rscript GO_20250607.r [options]
 
 
 Options:
