@@ -3,6 +3,7 @@
 python extract.py input.txt ref.gff 0kb ./output.gene 
 ```
 #input.bed  
+|chr|start|end|
 |---|---|---|
 |chr1|300001|315000|
 |chr1|355001|410000|
