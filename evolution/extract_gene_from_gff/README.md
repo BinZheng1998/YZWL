@@ -2,7 +2,7 @@
 ```
 python extract.py input.txt ref.gff 0kb ./output.gene 
 ```
-#input.bed
+#input.bed  
 |---|---|---|
 |chr1    |300001  |315000  |
 |chr1    |355001  |410000  |
