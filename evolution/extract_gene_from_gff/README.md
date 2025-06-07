@@ -19,7 +19,7 @@ python extract.py input.txt ref.gff/gtf 0kb ./output.gene
 # get genes from 5species gtf/gff
 Usage
 ```
-用法: get_genes_202506.sh --input <输入文件> [选项]
+用法: get_genes_from_5species.sh --input <输入文件> [选项]
 选项:
   --input    输入文件路径（必需）
   --species  物种（cattle/dog/pig/sheep/chicken）[默认: cattle]
