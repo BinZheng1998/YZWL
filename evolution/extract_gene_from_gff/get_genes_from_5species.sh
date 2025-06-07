@@ -66,7 +66,7 @@ for WINDOW in "${WINDOWS[@]}"; do
     OUTPUT_FILE="${OUTPUT_DIR}/${INPUT_BASENAME}_${WINDOW}_genes.txt"
     
     # 调用Python脚本
-    python ~/project/01_evolution/script/extract_gene_202506.py \
+    python Get_gene_from_GTF-or-GFF_202506.py \
         "$INPUT_FILE" \
         "${GFF_PATHS[$SPECIES]}" \
         "$WINDOW" \
