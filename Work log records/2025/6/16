@@ -1,0 +1,70 @@
+#!/bin/bash
+# 主脚本：为每个样本生成一个包含 BQSR 和 GVCF 步骤的 .sh 文件
+# 输入文件：samples.txt（格式：sample_id bam_file outdir）
+
+# 参数
+REF="/share/org/YZWL/yzwl_zhengbin/project/00-ref/huxu.fa"
+KNOWN_VCF="/share/org/YZWL/yzwl_zhengbin/project/01-gwas/01-result/vcf/dbsnp/chicken_site_snp.vcf"
+JOB_DIR="/share/org/YZWL/yzwl_zhengbin/project/01-gwas/01-result/gvcf2/gwas_scripts"
+CURRENT_DIR=$(pwd)
+
+# 确保 JOB_DIR 存在
+mkdir -p "$JOB_DIR"
+
+# 读取 samples.txt
+while IFS=$'\t' read -r sample bam_file outdir
+do
+  echo "处理样本: $sample | 输出目录: $outdir"
+
+  # 确保输出目录存在
+  mkdir -p "$outdir"
+
+  # 生成合并 BQSR 和 GVCF 的脚本
+  job_script="${JOB_DIR}/${sample}_gwas.sh"
+  cat > "$job_script" << EOF
+#!/bin/bash
+#CSUB -J gwas_${sample}       # 作业名
+#CSUB -q c01                  # 队列名
+#CSUB -o ${JOB_DIR}/${sample}.out    # 输出文件
+#CSUB -e ${JOB_DIR}/${sample}.err    # 错误文件
+#CSUB -n 16                   # 使用16个CPU核
+#CSUB -R span[hosts=1]
+#CSUB -cwd $outdir            # 作业运行目录
+
+# 激活 Conda 环境
+source /share/org/YZWL/yzwl_zhengbin/software/miniconda3/bin/activate
+conda activate gwas
+
+# 运行 BQSR
+echo "运行 BaseRecalibrator for $sample ..."
+gatk BaseRecalibrator \\
+  -R "$REF" \\
+  -I "$bam_file" \\
+  --known-sites "$KNOWN_VCF" \\
+  -O "${outdir}/${sample}.recal.table"
+
+echo "运行 ApplyBQSR for $sample ..."
+gatk ApplyBQSR \\
+  -R "$REF" \\
+  -I "$bam_file" \\
+  --bqsr-recal-file "${outdir}/${sample}.recal.table" \\
+  -O "${outdir}/${sample}.recal.bam"
+
+# 运行 HaplotypeCaller 生成 GVCF
+echo "运行 HaplotypeCaller for $sample ..."
+gatk HaplotypeCaller \\
+  -R "$REF" \\
+  -I "${outdir}/${sample}.recal.bam" \\
+  -O "${outdir}/${sample}.g.vcf" \\
+  --emit-ref-confidence GVCF \\
+  --alleles "$KNOWN_VCF" \\
+  --dbsnp "$KNOWN_VCF"
+
+echo "BQSR 和 GVCF 完成: $sample"
+EOF
+
+  # 设置脚本为可执行
+  chmod +x "$job_script"
+  echo "生成脚本: $job_script"
+
+done < samples.txt
