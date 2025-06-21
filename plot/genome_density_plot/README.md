@@ -19,3 +19,5 @@ input2
 
 example
 ![image](https://github.com/binzhengbin/YZWL/blob/main/plot/genome_density_plot/chicken_selection_fst.png)
+
+other methods：https://github.com/BinZheng1998/YZWL/tree/main/Software/R/RIdeogram
