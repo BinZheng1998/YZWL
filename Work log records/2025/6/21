@@ -1,0 +1,71 @@
+setwd("~/project/01_evolution/convergent_evolution/07_result/20250621_chicken_smallchr_GO/")
+library(clusterProfiler)
+library(org.Gg.eg.db)
+library(DOSE)
+library(GO.db)
+par(family="Arial")
+df <- read.table("../20250605_DCMS_res/convergent/chicken/chicken_convergent_neg_DCMS_top_005_merged_regions_0kb_genes.txt",sep = '\t',header = T)
+df <- df[df$chromosome %in% c("chr16","chr25","chr29","chr31","chr32","chr33","chr34","chr35","chr36","chr37","chr38"),]
+df2 <- df[df$chromosome == "chr38",]
+genes_list <- strsplit(df[[5]], ",")
+all_genes <- unlist(genes_list)
+symbol <- as.character(all_genes)
+symbol <- gsub(" ","",symbol)
+chicken_genes <- unique(symbol)
+chicken_genes
+
+eg <- bitr(chicken_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = "org.Gg.eg.db")
+id <- as.character(eg[, 2])
+
+ego <- enrichGO(gene = id, OrgDb = "org.Gg.eg.db", ont = "all",
+                pAdjustMethod = "BH", pvalueCutoff = 1, qvalueCutoff = 1,
+                readable = TRUE)
+
+ego <- as.data.frame(ego)
+ego <- ego[ego$pvalue < 0.05,]
+head(ego)
+
+library(ggplot2)
+library(ggrepel)    # For geom_text_repel
+library(stringr)    # For str_wrap
+library(ggnewscale) # For multiple color scales
+
+#基础款
+ggplot(ego,aes(y=-log10(pvalue),x=log10(FoldEnrichment),color=`ONTOLOGY`))+
+  geom_point(aes(size=-log10(pvalue)))+
+  scale_size_continuous(range = c(2,10))+
+  scale_color_manual(values = c("BP" = "#1F78B4", "CC" = "#33A02C", "MF" = "#E31A1C")) +
+  xlab('log10(Fold-change)')+
+  ylab('-log10(Pvalue)')+
+  theme_classic()+
+  theme(legend.position = "None")+
+  geom_text_repel(aes(label = str_wrap(Description,50)),color='black')
+
+p<-ggplot() +
+  geom_point(data = subset(ego, ONTOLOGY == "BP"),
+             aes(x = log10(FoldEnrichment), y = -log10(pvalue), 
+                 size = -log10(pvalue), alpha = -log10(pvalue)),color = "#E31A1C", stroke = 0) +
+  scale_alpha_continuous(name = "BP -log10(pvalue)") +
+  geom_point(data = subset(ego, ONTOLOGY == "CC"),
+             aes(x = log10(FoldEnrichment), y = -log10(pvalue), 
+                 size = -log10(pvalue), alpha = -log10(pvalue)),color = "#33A02C", stroke = 0) +
+  scale_alpha_continuous(name = "CC -log10(pvalue)") +
+  geom_point(data = subset(ego, ONTOLOGY == "MF"),
+             aes(x = log10(FoldEnrichment), y = -log10(pvalue), 
+                 size = -log10(pvalue), alpha = -log10(pvalue)),color = "#1F78B4",stroke = 0)+
+  scale_alpha_continuous(name = "MF -log10(pvalue)") +
+  scale_size_continuous(range = c(2, 10)) +
+  xlab('log10(FoldEnrichment)') +
+  ylab('-log10(Pvalue)') +
+  theme_classic() +
+  theme(legend.position = "None",
+        axis.title.x = element_text(margin = margin(t = 10)), # Add top margin to x-axis title
+        axis.title.y = element_text(margin = margin(r = 10)), # Add right margin to y-axis title
+        axis.text = element_text(size = 12)) +
+  geom_text_repel(data = ego, 
+                  aes(x = log10(FoldEnrichment), y = -log10(pvalue), 
+                      label = str_wrap(Description, 50)),
+                  color = 'black')
+p
+
+ggsave(filename = 'small_chr_GO.pdf',plot = p,dpi = 500,,width = 5.5,height = 4.5)
