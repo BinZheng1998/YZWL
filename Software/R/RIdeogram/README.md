@@ -1,3 +1,3 @@
 RIdeogram
 ## plot
-![image](https://github.com/binzhengbin/YZWL/blob/main/plot/scatter_plot/pig_BW.png)
+![image](https://github.com/BinZheng1998/YZWL/blob/main/Software/R/RIdeogram/pig_chr_dentisy.png)
