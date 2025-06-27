@@ -1,6 +1,6 @@
 featureCounts
 # Step1
-input data 
+input data:featureCounts_tab.txt 
 
 |PATH way|
 |---|
