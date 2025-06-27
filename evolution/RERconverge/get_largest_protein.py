@@ -36,7 +36,7 @@ def get_protein(input_feature_txt, species, input_protein_faa, output_fa=None, o
             gene_id = row['gene_id']
             if protein_id in protein_dict:
                 # 创建新的序列ID，格式为 protein_id-gene_id-species
-                new_id = f"{protein_id}-{gene_id}-{species}"
+                new_id = f"{protein_id} {species} {gene_id}"
                 # 写入序列
                 out_handle.write(f">{new_id}\n{protein_dict[protein_id]}\n")
             else:
