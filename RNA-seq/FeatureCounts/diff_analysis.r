@@ -11,7 +11,7 @@ df <- read.csv('../04_expression_result/merged_gene_abund_results.csv', sep = ',
 data <- read.table("../metadata/chicken_rnaseq_metadata.txt",sep = '\t',header = T,fill=T)
 data2 <- data[, c(2, 9, 12)]
 colnames(data2) <- c('Sample', 'BW', 'Tissue')
-data2 <- data2[data2$Tissue == "Muscle",]
+data2 <- data2[data2$Tissue == "Liver",]
 gene <- read.table("~/project/01_evolution/convergent_evolution/07_result/20250620_homo_gene/BW/5species_pos_BW_top5_50kb_homo_genes.txt",sep = '\t',header = T)
 gene_list <- gene$chicken_id
 results_df <- data.frame(Gene = character(), 
@@ -33,11 +33,18 @@ for (gene in gene_list) {
   
   # 合并数据
   final <- merge(df4, data2, by = 'Sample')
+  final <- final[!grepl("Middle|N/A", final$BW), ]
   final2 <- final[final[[gene]] > 0.00000001, ]
-  # 如果过滤后每组样本数量都 >=2 才继续
+  if (nrow(final2) < 6) {
+    message(sprintf("⚠️ 基因 %s 过滤后样本少于6个", gene))
+    next
+  }
+  # 如果 High 或 Low 组样本数量 < 3 则跳过
   group_counts <- table(final2$BW[final2$BW %in% c("Low", "High")])
-  if (any(group_counts < 2)) {
-    message(sprintf("⚠️ 基因 %s 在 High/Low 中样本数过少，跳过分析", gene))
+  low_count <- as.numeric(group_counts["Low"] %||% 0)
+  high_count <- as.numeric(group_counts["High"] %||% 0)
+  if (low_count < 3 || high_count < 3) {
+    message(sprintf("⚠️ 基因 %s 在 High (%d) 或 Low (%d) 中样本数少于3，跳过分析", gene, high_count, low_count))
     next
   }
   
@@ -91,10 +98,11 @@ for (gene in gene_list) {
                 map_signif_level = F, tip_length = 0, test = 't.test')
   
   # 保存图表，文件名包含当前基因名
-  ggsave(p2, file = paste0(gene, '_High_vs_Low_Muscle_BWpos.pdf'), dpi = 300, width = 2.5, height = 3)
+  ggsave(p2, file = paste0(gene, '_High_vs_Low_Liver_BWpos.pdf'), dpi = 300, width = 2.5, height = 3)
 }
 results_df$P.adjust <- p.adjust(results_df$P_Value)
 results_df <- unique(results_df)
 # 在循环结束后，将数据框写入 txt 文件
-write.table(results_df, file = "BW_pos_top5_50kb_gene_Muscle_ttest_results.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(results_df, file = "BW_pos_top5_50kb_gene_Liver_ttest_results.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
 
