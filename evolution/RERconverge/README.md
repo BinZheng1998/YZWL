@@ -12,3 +12,8 @@ python get_protein.py \
   --species pig \
   --input-protein-faa GCF_000003025.6_Sscrofa11.1_protein.faa
 ```
+## Step2
+```
+blastp比对获得与人类同源基因的相互最佳比对
+blastp.sh
+```
