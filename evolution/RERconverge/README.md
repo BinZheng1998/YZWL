@@ -48,5 +48,5 @@ step2生成的rbh_combined.txt，需要将其物种名改为跟后续进化树�
 |Latimeria chalumnae	|coelacanth	|latCha1|
 |Otolemur garnettii	|small_eared_galago	|otoGar3|
 |Pantholops hodgsonii	|tibetan_antelope	|panHod1|
-|Gallus gallus	chicken	galGal4
-![image](https://github.com/user-attachments/assets/019daa62-ebf2-4bf3-9c9f-14544cdd0e2f)
+|Gallus gallus	|chicken	|galGal4|
+
