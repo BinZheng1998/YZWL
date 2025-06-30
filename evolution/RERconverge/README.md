@@ -19,6 +19,7 @@ blastp.sh
 ```
 ## Step3
 step2生成的rbh_combined.txt，需要将其物种名改为跟后续进化树中的物种名保持一致。
+如下：第3列就是进化树中的物种名，来源于ucsc 100-way alignment（https://hgdownload.soe.ucsc.edu/goldenPath/hg38/multiz100way/）
 |name1|name2|name3|
 |---|---|---|
 |Chlorocebus_sabaeus	|green_monkey	|chlSab2|
