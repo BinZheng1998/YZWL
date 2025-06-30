@@ -50,4 +50,7 @@ step2生成的rbh_combined.txt，需要将其物种名改为跟后续进化树�
 |Otolemur garnettii	|small_eared_galago	|otoGar3|
 |Pantholops hodgsonii	|tibetan_antelope	|panHod1|
 |Gallus gallus	|chicken	|galGal4|
-
+```
+Usage:
+python mafft.py
+```
