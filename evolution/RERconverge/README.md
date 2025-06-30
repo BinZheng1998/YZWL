@@ -19,7 +19,10 @@ blastp.sh
 ```
 ## Step3
 这一步是使用mafft进行多序列比对，并进行trimal修剪序列。  
-注意：step2生成的rbh_combined.txt，需要将其物种名改为跟后续进化树中的物种名保持一致。如下：第3列就是进化树中的物种名，来源于ucsc 100-way alignment（https://hgdownload.soe.ucsc.edu/goldenPath/hg38/multiz100way/）
+注意：  
+1.首先将所有物种的最长蛋白质序列的fa文件合并为一个总的fa文件。  
+2.step2生成的rbh_combined.txt，需要将其物种名改为跟后续进化树中的物种名保持一致。如下：第3列就是进化树中的物种名，来源于ucsc 100-way alignment（https://hgdownload.soe.ucsc.edu/goldenPath/hg38/multiz100way/）
+3.具体物种名如下：
 |name1|name2|name3|
 |---|---|---|
 |Chlorocebus_sabaeus	|green_monkey	|chlSab2|
@@ -51,6 +54,7 @@ blastp.sh
 |Pantholops hodgsonii	|tibetan_antelope	|panHod1|
 |Gallus gallus	|chicken	|galGal4|
 ```
+mafft比对
 Usage:
 python mafft.py
 ```
