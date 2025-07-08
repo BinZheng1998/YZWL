@@ -58,3 +58,20 @@ mafft比对
 Usage:
 python mafft.py
 ```
+## Step4
+从ucsc100 way alignment中提取所需的进化树拓扑结果，或者从Timetree网站上直接构建进化树。
+https://hgdownload.soe.ucsc.edu/goldenPath/hg38/multiz100way/
+http://www.timetree.org/
+#代码如下：
+```
+library(ape)
+#从ucsc-100way主树中提取28个物种的子树
+ucsctree <- read.tree('hg38.100way.nh')
+species <- read.table('species_name.txt',sep = '\t',header = T)
+subtree <- keep.tip(ucsctree,species$name3)
+plot(subtree)
+write.tree(subtree, file = "ucsc100way_species_tree.nwk")
+```
+## Step5
+1.将mafft多序列比对、trimal进行修剪后的结果放置一个新的文件夹，比如RERconverge_input
+2.接下来使用R包RERconverge进行分析，具体见RERconverge.R内容。
