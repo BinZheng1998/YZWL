@@ -75,4 +75,6 @@ write.tree(subtree, file = "ucsc100way_species_tree.nwk")
 ## Step5
 1.将mafft多序列比对、trimal进行修剪后的结果放置一个新的文件夹，比如RERconverge_input  
 2.接下来使用R包RERconverge进行分析，具体见RERconverge.R内容。
-#### 注意：如果某个基因的多序列比对结果存在不同物种长度不一致，会导致RERconverge报错，可以将其里面的特殊氨基酸转化为X。使用MSA-length-different.r代码进行检测
+#### 注意：如果某个基因的多序列比对结果存在不同物种长度不一致，会导致RERconverge报错，可以将其里面的特殊氨基酸（比如J）转化为X。使用MSA-length-different.r代码进行检测。或者直接跳过那些基因。  
+标准氨基酸符号如下：  
+https://zh.wikipedia.org/wiki/%E6%A8%99%E6%BA%96%E8%9B%8B%E7%99%BD%E8%83%BA%E5%9F%BA%E9%85%B8%E5%88%97%E8%A1%A8
