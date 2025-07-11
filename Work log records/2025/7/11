@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# 定义染色体数组，包含1到38号染色体以及Z、W、MT
+chromosomes=( {1..38} Z W MT )
+
+# 遍历每个染色体，生成对应的sh文件
+for chr in "${chromosomes[@]}"
+do
+    script_name="process_chr${chr}.sh"
+    echo "Generating script for chr${chr}: ${script_name}"
+
+    # 创建sh文件并写入内容
+    cat << EOF > ${script_name}
+#!/bin/bash
+
+# 第一步：使用bcftools合并两组样本的VCF文件
+bcftools merge ../02_final_keep_2045samples_script/chr${chr}_2036samples.vcf.gz \
+    ../03_WPR_yunnan_raw_vcf/chr${chr}.vcf.gz \
+    -Oz -o chr${chr}_merged.vcf.gz > log_merge_chr${chr}.txt 2>&1
+
+# 第二步：逐步过滤
+# 步骤2.1：minDP 4
+vcftools --gzvcf ./chr${chr}_merged.vcf.gz \
+    --minDP 4 \
+    --recode \
+    --recode-INFO-all \
+    --stdout 2> log_filter_minDP_chr${chr}.txt | bgzip -c > chr${chr}_minDP4.vcf.gz
+
+# 步骤2.2：选择SNP（移除indels并限制等位基因数量）
+vcftools --gzvcf ./chr${chr}_minDP4.vcf.gz \
+    --remove-indels \
+    --min-alleles 2 \
+    --max-alleles 2 \
+    --recode \
+    --recode-INFO-all \
+    --stdout 2> log_filter_snp_chr${chr}.txt | bgzip -c > chr${chr}_minDP4_SNP_2allele.vcf.gz
+
+# 步骤2.3：max-missing 0.50
+vcftools --gzvcf ./chr${chr}_minDP4_SNP_2allele.vcf.gz \
+    --max-missing 0.50 \
+    --recode \
+    --recode-INFO-all \
+    --stdout 2> log_filter_missing_chr${chr}.txt | bgzip -c > chr${chr}_minDP4_SNP_2allele_50miss.vcf.gz
+
+# 步骤2.4：maf 0.01
+vcftools --gzvcf ./chr${chr}_minDP4_SNP_2allele_50miss.vcf.gz \
+    --maf 0.01 \
+    --recode \
+    --recode-INFO-all \
+    --stdout 2> log_filter_maf_chr${chr}.txt | bgzip -c > chr${chr}_minDP4_SNP_2allele_50miss_maf001.vcf.gz
+
+# 步骤2.5：hwe 0.000001
+vcftools --gzvcf ./chr${chr}_minDP4_SNP_2allele_50miss_maf001.vcf.gz \
+    --hwe 0.000001 \
+    --recode \
+    --recode-INFO-all \
+    --stdout 2> log_filter_hwe_chr${chr}.txt | bgzip -c > chr${chr}_DP4_SNP_2allele_50miss_maf001_HWE1e6.vcf.gz
+
+echo "Processing for chr${chr} completed."
+EOF
+
+    # 赋予执行权限
+    chmod +x ${script_name}
+done
+
+echo "All scripts generated. You can run each script individually, e.g., ./process_chr1.sh"
