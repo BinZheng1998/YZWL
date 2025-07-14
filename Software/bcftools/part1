@@ -7,3 +7,6 @@ chr1 1
 chr2 2
 chr3 3
 bcftools annotate --rename-chrs chr_name_change.txt cohart.filter.vcf.gz | bgzip -c > cohart.filter.nochr.vcf.gz
+
+#删除vcf文件中REF或者ALT为*的位点：
+bcftools filter -e 'REF="*" || ALT ~ "\*"' pig_DP4_2allele_0.05miss_0.01maf.vcf.gz -Oz -o pig_DP4_2allele_0.05miss_0.01maf_snps.vcf.gz
