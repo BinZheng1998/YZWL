@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+
+import sys
+import re
+from collections import defaultdict
+
+def parse_attributes(attr_str):
+    """Parse GFF attributes string into a dictionary."""
+    attr_dict = {}
+    for attr in attr_str.split(';'):
+        if '=' in attr:
+            key, value = attr.split('=', 1)
+            attr_dict[key] = value
+    return attr_dict
+
+def extract_genbank(dbxref):
+    """Extract Genbank value from Dbxref field."""
+    if not dbxref:
+        return None
+    for entry in dbxref.split(','):
+        if entry.startswith('Genbank:'):
+            return entry.split(':', 1)[1]
+    return None
+
+def format_attributes(attr_dict):
+    """Format dictionary back to GFF attributes string."""
+    return ';'.join(f"{key}={value}" for key, value in attr_dict.items() if value)
+
+def main(input_gff, output_gff):
+    # Feature types
+    top_level_features = {'gene', 'pseudogene', 'C_gene_segment', 'V_gene_segment'}
+    rna_types = {'mRNA', 'miRNA', 'tRNA', 'rRNA', 'SRP_RNA', 'lnc_RNA', 'telomerase_RNA', 'RNase_MRP_RNA', 
+                 'transcript', 'primary_transcript', 'cDNA_match', 'match'}
+    
+    # Dictionary to track exon counts for each Parent
+    exon_counts = defaultdict(int)
+    # Dictionary to store top-level ID mappings (old ID to new ID)
+    toplevel_id_map = {}
+    # Dictionary to store RNA ID mappings (old ID to new ID)
+    rna_id_map = {}
+    
+    # Log file for warnings
+    log_file = output_gff + '.log'
+    with open(log_file, 'w') as log:
+        # Output file
+        with open(input_gff, 'r') as infile, open(output_gff, 'w') as outfile:
+            for line in infile:
+                # Skip comments and empty lines
+                if line.startswith('#') or not line.strip():
+                    outfile.write(line)
+                    continue
+
+                # Split GFF line into columns
+                cols = line.strip().split('\t')
+                if len(cols) < 9:
+                    warning = f"Warning: Skipping invalid line (less than 9 columns): {line.strip()}"
+                    print(warning)
+                    log.write(warning + '\n')
+                    continue
+
+                # Parse attributes (9th column)
+                attr_dict = parse_attributes(cols[8])
+                feature_type = cols[2]
+
+                # Process top-level features (gene, pseudogene, C_gene_segment, V_gene_segment)
+                if feature_type in top_level_features:
+                    if 'Name' in attr_dict:
+                        # Use 'gene-' prefix for gene and pseudogene, feature-specific prefix for others
+                        prefix = 'gene' if feature_type in {'gene', 'pseudogene'} else feature_type
+                        new_id = f"{prefix}-{attr_dict['Name']}"
+                        old_id = attr_dict.get('ID', '')
+                        toplevel_id_map[old_id] = new_id
+                        attr_dict['ID'] = new_id
+                    else:
+                        warning = f"Warning: No 'Name' attribute for {feature_type}: {line.strip()}"
+                        print(warning)
+                        log.write(warning + '\n')
+
+                # Process RNA-related features
+                elif feature_type in rna_types:
+                    genbank = extract_genbank(attr_dict.get('Dbxref', ''))
+                    if genbank:
+                        new_id = f"rna-{genbank}"
+                        old_id = attr_dict.get('ID', '')
+                        rna_id_map[old_id] = new_id
+                        attr_dict['ID'] = new_id
+                        # Update Parent to new top-level ID
+                        if 'Parent' in attr_dict and attr_dict['Parent'] in toplevel_id_map:
+                            attr_dict['Parent'] = toplevel_id_map[attr_dict['Parent']]
+                        elif 'Parent' in attr_dict:
+                            warning = f"Warning: Parent {attr_dict['Parent']} not found in toplevel_id_map for {feature_type}: {line.strip()}"
+                            print(warning)
+                            log.write(warning + '\n')
+                    else:
+                        warning = f"Warning: No 'Genbank' in Dbxref for {feature_type}: {line.strip()}"
+                        print(warning)
+                        log.write(warning + '\n')
+
+                # Process exon features
+                elif feature_type == 'exon':
+                    genbank = extract_genbank(attr_dict.get('Dbxref', ''))
+                    if genbank and 'Parent' in attr_dict:
+                        parent_id = attr_dict['Parent']
+                        # Increment exon count for this parent
+                        exon_counts[parent_id] += 1
+                        new_id = f"exon-{genbank}-{exon_counts[parent_id]}"
+                        attr_dict['ID'] = new_id
+                        # Update Parent to new RNA ID
+                        if parent_id in rna_id_map:
+                            attr_dict['Parent'] = rna_id_map[parent_id]
+                        else:
+                            warning = f"Warning: Parent {parent_id} not found in rna_id_map for exon: {line.strip()}"
+                            print(warning)
+                            log.write(warning + '\n')
+                    else:
+                        warning = f"Warning: Missing 'Genbank' in Dbxref or 'Parent' for exon: {line.strip()}"
+                        print(warning)
+                        log.write(warning + '\n')
+
+                # Process CDS features
+                elif feature_type == 'CDS':
+                    genbank = extract_genbank(attr_dict.get('Dbxref', ''))
+                    if genbank:
+                        new_id = f"cds-{genbank}"
+                        attr_dict['ID'] = new_id
+                        # Update Parent to new RNA ID
+                        if 'Parent' in attr_dict and attr_dict['Parent'] in rna_id_map:
+                            attr_dict['Parent'] = rna_id_map[attr_dict['Parent']]
+                        elif 'Parent' in attr_dict:
+                            warning = f"Warning: Parent {attr_dict['Parent']} not found in rna_id_map for CDS: {line.strip()}"
+                            print(warning)
+                            log.write(warning + '\n')
+                    else:
+                        warning = f"Warning: No 'Genbank' in Dbxref for CDS: {line.strip()}"
+                        print(warning)
+                        log.write(warning + '\n')
+
+                # Update attributes column
+                cols[8] = format_attributes(attr_dict)
+                # Write modified line
+                outfile.write('\t'.join(cols) + '\n')
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python rename_features.py input.gff output.gff")
+        sys.exit(1)
+
+    input_gff = sys.argv[1]
+    output_gff = sys.argv[2]
+    main(input_gff, output_gff)
+    print(f"Modified GFF file written to {output_gff}")
+    print(f"Warnings and errors logged to {output_gff}.log")
