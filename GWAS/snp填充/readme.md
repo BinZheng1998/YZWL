@@ -57,3 +57,8 @@ zcat chr36_DP4_SNP_2allele_50miss_maf001_HWE1e6_simply.vcf.gz | awk 'BEGIN {FS=O
 ```bash
 bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o snp.simply.vcf.gz
 ```
+
+#去除重复snps
+```bash
+bcftools norm -d snps pig_DP4_2allele_0.05miss_0.01maf_snps.vcf.gz -Oz -o pig_DP4_2allele_0.05miss_0.01maf_snps_rmdup.vcf.gz
+```
