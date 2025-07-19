@@ -1,2 +1,2 @@
-1.rnaseq_bam_reads_counts.py脚本是用来从bam文件中提取每个区间的reads数量的。
-2.rnaseq_bam_reads_count_merge.sh用来合并多个bam文件reads的结果。
+1.rnaseq_bam_reads_counts.py脚本是用来从bam文件中提取每个区间的reads数量的。  
+2.rnaseq_bam_reads_count_merge.sh用来合并多个bam文件reads的结果。  
