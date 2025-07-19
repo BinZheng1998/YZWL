@@ -81,4 +81,5 @@ write.tree(subtree, file = "ucsc100way_species_tree.nwk")
 https://zh.wikipedia.org/wiki/%E6%A8%99%E6%BA%96%E8%9B%8B%E7%99%BD%E8%83%BA%E5%9F%BA%E9%85%B8%E5%88%97%E8%A1%A8
 
 ## Step6 
+##  执行RER分析，输入结果就是进化树拓补结构的nwk文件和一个包含多物种基因多重比对的结果。  
 #可视化见代码RERconverge.R
