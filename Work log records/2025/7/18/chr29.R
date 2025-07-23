@@ -86,6 +86,29 @@ pi_w <- pi_w[pi_w$CHROM == "chr29",]
 pi_w$breed <- "RJF" 
 pi <- rbind(pi_d,pi_w)
 
+#AF
+af_d <- read.table('../20250721_freq/domestic_chr29_freq.frq',sep = '\t')
+colnames(af_d) <- c('chr','pos','allele','CHR_NUMBER','domestic_REF','domestic_ALT')
+af_w <- read.table('../20250721_freq/wild_chr29_freq.frq',sep = '\t')
+colnames(af_w) <- c('chr','pos','allele','CHR_NUMBER','wild_REF','wild_ALT')
+af <- cbind(af_d,af_w)
+colnames(af) 
+af$domestic_REF <- gsub("^[A-Z]:","",af$domestic_REF)
+af$domestic_ALT <- gsub("^[A-Z]:","",af$domestic_ALT)
+af$wild_REF <- gsub("^[A-Z]:","",af$wild_REF)
+af$wild_ALT <- gsub("^[A-Z]:","",af$wild_ALT)
+af$domestic_REF<- as.numeric(af$domestic_REF)
+af$wild_REF<- as.numeric(af$wild_REF)
+af$domestic_ALT<- as.numeric(af$domestic_ALT)
+af$wild_ALT<- as.numeric(af$wild_ALT)
+af$ALT_diff <- af$domestic_ALT-af$wild_ALT
+af$REF_diff <- af$domestic_REF-af$wild_REF
+af2 <- af[,c(1,2,5,6,11,12,13,14)]
+af2$ALT_AF_ratio <- af2$domestic_ALT/af2$wild_ALT
+
+#FST
+fst <- read.table('~/project/01_evolution/convergent_evolution/01_chicken/new-res/selection_analysis/DP4_2allele_50miss_maf001/1.10kbwindow/fst/chicken_2036samples_10kbwindow_5kbstep.windowed.weir.fst',sep = '\t',header = T)
+fst <- fst[fst$CHROM == "chr29",]
 #
 p1 <- ggplot(chr29_repeat, aes(start, lowercase)) + geom_area(fill="#E64b35b2") + theme_classic()+xlab('')+ylab('Repeat/5kb')+
   #geom_hline(aes(yintercept=repeat_mean),linetype="dashed")+ 
@@ -118,16 +141,28 @@ p6 <- ggplot(pi)+geom_line(mapping = aes(BIN_START,PI,color=breed),linewidth=0.2
   theme(panel.grid =element_blank(),axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),
         axis.line.x = element_blank(),legend.position = 'none')
 p6
-p7 <- ggplot(chr29_ORgene, aes(x = start, xend = end, y = 0.5, yend = 0.5, color = factor(gene), fill = factor(gene))) +
+
+p7 <- ggplot(af2,aes(x=pos,y=ALT_diff))+geom_point(color="#91d1c2b2",size=0.1)+theme_classic()+xlab('')+ylab('AF diff')+
+  scale_y_continuous(limits = c(-0.7,0.7))+geom_hline(aes(yintercept=0),linetype="dashed",color='black')+
+  theme(panel.grid =element_blank(),axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),
+        axis.line.x = element_blank())
+p7
+p8 <- ggplot(fst, aes(BIN_START, WEIGHTED_FST)) + geom_area(fill="#3c5488b2") + theme_classic()+xlab('')+ylab('Fst')+
+  #geom_hline(aes(yintercept=repeat_mean),linetype="dashed")+ 
+  theme(panel.grid =element_blank(),axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),
+        axis.line.x = element_blank())
+p8
+
+p9 <- ggplot(chr29_ORgene, aes(x = start, xend = end, y = 0.5, yend = 0.5, color = factor(gene), fill = factor(gene))) +
   geom_segment(size = 10) +scale_color_manual(values = c("0" = "white", "1" = "#f39b7fb2"), guide = "none") +
   scale_fill_manual(values = c("0" = "white", "1" = "#f39b7fb2"), guide = "none") +labs(x = "Chromosome 29", y = "Olfactory gene") + 
   scale_x_continuous(breaks = c(0,1e6,2e6,3e6,4e6,5e6,6e6),labels = c('0','1Mb','2Mb','3Mb','4Mb','5Mb','6Mb'))+
   theme_minimal() +theme(axis.title.y = element_blank(),axis.text.y = element_blank(),axis.ticks.y = element_blank(),panel.grid = element_blank())
-p7 
-
-final_plot <- p1 / p2 / p3 / p4 / p5 /p6/p7
+p9 
+library(patchwork)
+final_plot <- p1 / p2 / p3 / p4 / p5 /p6/p7/p8/p9
 final_plot
-ggsave(final_plot,filename = 'chr29.pdf',dpi = 300,width = 9,height = 5)
+ggsave(final_plot,filename = 'chr29.pdf',dpi = 300,width = 12,height = 8)
 library(ggsci)
 library("scales")
 mypal =pal_npg("nrc", alpha =0.7)(9)
