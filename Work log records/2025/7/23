@@ -1,0 +1,140 @@
+setwd('~/project/01_evolution/convergent_evolution/07_result/20250723_chr_region_plot/circle_plot/')
+library(circlize)
+#染色体长度信息
+chr <- read.table('../chicken_chr_length.txt',sep = '\t',header = T)
+chr <- chr[,-2]
+colnames(chr) <- c('chr','length')
+chr <-chr[chr$chr >= 16,]
+chr <- chr[-c(2,3,4,5),]
+#snp密度信息
+snp <- read.table('chicken_snp_density_10kb.snpden',sep = '\t',header = T)
+colnames(snp) <- c('chr','start','snp','density')
+snp$chr <- gsub("chr","",snp$chr)
+snp$chr <- as.numeric(snp$chr)
+snp <-snp[snp$chr >= 16,]
+snp <- snp[!snp$chr %in% c(17,18,19,20), ]
+snp <- na.omit(snp)
+#pos selection
+pos <- read.table('../../20250714_DCMS_res/domestication/chicken/chicken_domestication_pos_DCMS_top_005_merged_regions.txt',sep = '\t')
+colnames(pos) <- c('chr','start','end')
+pos$chr <- gsub("chr","",pos$chr)
+pos <-pos[pos$chr >= 16,]
+pos <- pos[!pos$chr %in% c(17,18,19,20), ]
+
+#neg selection
+neg <- read.table('../../20250714_DCMS_res/domestication/chicken/chicken_domestication_neg_DCMS_top_005_merged_regions.txt',sep = '\t')
+colnames(neg) <- c('chr','start','end')
+neg$chr <- gsub("chr","",neg$chr)
+neg <-neg[neg$chr >= 16,]
+neg <- neg[!neg$chr %in% c(17,18,19,20), ]
+
+
+brk <- seq(0,20,by=2)*10^6
+brk.label<-c()
+for (i in brk){
+  ifelse(i%%10^7==0,brk.label<-append(brk.label,
+                                      paste0(i/10^7,"0M")),
+         brk.label<-append(brk.label,""))
+}
+brk.label[1]<-"0M"
+brk.label <- c("0M","2M","4M","6M","8M","10M")
+#
+gradient_colors <- colorRampPalette(c("#dc0000ff","grey90", "#3c5488ff"))(nrow(chr))
+
+pdf('small_chr_circlize.pdf')
+circos.clear()
+circos.par(start.degree =86,clock.wise = T)
+circos.initialize(factors = chr$chr, 
+                  xlim = matrix(c(rep(0,19),chr$length),ncol=2))
+circos.trackPlotRegion(chr$chr, 
+                       ylim = c(0, 4),
+                       track.height = 0.05,
+                       bg.border = NA, 
+                       #ylim=CELL_META$ylim,
+                       panel.fun = function(x, y) {
+                         circos.text(mean(CELL_META$xlim), 12, 
+                                     get.cell.meta.data("sector.index"))
+                       })
+
+circos.trackPlotRegion(chr$chr, 
+                       ylim = c(0, 6),
+                       track.height = 0.05,
+                       bg.col = gradient_colors,
+                       bg.border = NA)
+
+for (chromosome in chr$chr){
+  circos.axis(sector.index = chromosome,
+              h = 11,
+              major.at = brk,
+              minor.ticks = 0,
+              labels = brk.label,
+              labels.facing="clockwise",
+              labels.cex = 0.5)
+}
+
+
+circos.track(
+  factors = snp$chr,
+  track.height = 0.1,
+  ylim = c(0, max(snp$density)),
+  bg.border = NA,  # 移除轨道边框
+  panel.fun = function(x, y) {
+    sector.index = CELL_META$sector.index
+    # 提取当前染色体的数据
+    chr_data = snp[snp$chr == sector.index, ]
+    
+    # 绘制柱状图
+    for(i in 1:nrow(chr_data)) {
+      circos.rect(
+        xleft = chr_data$start[i] ,   # 柱状图左边界
+        ybottom = 0,                          # 柱状图底部
+        xright = chr_data$start[i] + 10000,  # 柱状图右边界
+        ytop = chr_data$density[i],           # 柱状图高度（密度值）
+        col = "#e64b35ff",                      # 柱状图颜色
+        border = NA                           # 移除柱状图边框
+      )
+    }
+  }
+)
+
+circos.genomicTrack(
+  pos, 
+  ylim = c(0, 1),
+  bg.border = NA,  # 移除轨道外边框
+  panel.fun = function(region, value, ...) {
+    # 绘制所有给定区间
+    circos.genomicRect(
+      region, 
+      value = NULL,  # 因为没有额外的值列
+      ytop = 1, 
+      ybottom = 0, 
+      col = "#4dbbd5ff",   # 填充颜色（蓝色）
+      border = "#4dbbd5ff", # 边框颜色（与填充色相同）
+      lwd = 0.01          # 边框线宽
+    )
+  }, 
+  stack = FALSE, 
+  track.height = 0.1
+)
+
+circos.genomicTrack(
+  neg, 
+  ylim = c(0, 1),
+  bg.border = NA,  # 移除轨道外边框
+  panel.fun = function(region, value, ...) {
+    # 绘制所有给定区间
+    circos.genomicRect(
+      region, 
+      value = NULL,  # 因为没有额外的值列
+      ytop = 1, 
+      ybottom = 0, 
+      col = "#00a087ff",   # 填充颜色（蓝色）
+      border = "#00a087ff", # 边框颜色（与填充色相同）
+      lwd = 0.01          # 边框线宽
+    )
+  }, 
+  stack = FALSE, 
+  track.height = 0.1
+)
+dev.off()
+
