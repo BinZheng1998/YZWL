@@ -8,6 +8,9 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile pig.fa pig_refGene.tx
 ```
 # Step2
 ```
-perl convert2annovar.pl -format vcf4old pig_DP4_2allele_0.05miss_0.01maf_snps_rmdup_rmsingleSNPchr.vcf.gz -out pig
+perl convert2annovar.pl -format vcf4old pig_DP4_2allele_0.05miss_0.01maf_snps_rmdup_rmsingleSNPchr.vcf.gz -out pig.avinput
 ````
 # Step3
+```
+perl annotate_variation.pl -geneanno -dbtype refGene -buildver huxu chicken.avinput ~/software/annovar/huxu
+```
