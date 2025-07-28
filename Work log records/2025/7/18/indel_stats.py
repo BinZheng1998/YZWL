@@ -62,7 +62,7 @@ def main():
     # 命令行参数解析
     parser = argparse.ArgumentParser(description="统计GATK生成的vcf.gz文件中每1kb或5kb窗口内indel长度分布及总长度")
     parser.add_argument("vcf_file", help="输入的vcf.gz文件路径")
-    parser.add_argument("--window", type=int, choices=[1000, 5000], default=1000,
+    parser.add_argument("--window", type=int, choices=[1000, 5000, 10000, 20000, 50000], default=1000,
                         help="窗口大小（1000表示1kb，5000表示5kb，默认为1000）")
     
     args = parser.parse_args()
