@@ -1,0 +1,49 @@
+#!/bin/bash
+# 脚本名称: calculate_pi_and_af_per_breed.sh
+# 功能: 计算每个品种的Pi和等位基因频率
+# 用法: ./calculate_pi_and_af_per_breed.sh sample_groups.txt samples.vcf.gz
+
+# 检查输入参数
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <sample_groups.txt> <input.vcf.gz>"
+    exit 1
+fi
+
+group_file=$1
+vcf_file=$2
+
+# 获取所有唯一的品种列表
+breeds=$(cut -f2 $group_file | sort | uniq)
+
+# 为每个品种创建样本列表文件并运行vcftools
+for breed in $breeds; do
+    echo "Processing breed: $breed"
+    
+    # 创建当前品种的样本列表文件
+    awk -v breed="$breed" '$2 == breed {print $1}' $group_file > ${breed}_samples.list
+    
+    # 计算Pi (核苷酸多样性)
+    vcftools --gzvcf $vcf_file \
+             --keep ${breed}_samples.list \
+             --window-pi 10000 \
+             --window-pi-step 5000 \
+             --out ${breed}_10Kwindow5Kstep
+    
+    # 计算等位基因频率
+    vcftools --gzvcf $vcf_file \
+             --keep ${breed}_samples.list \
+             --freq \
+             --out ${breed}_freq
+    
+    echo "Completed processing for breed: $breed"
+done
+
+echo "All breed analyses completed."
+
+# 可选: 合并所有品种的结果
+# 合并Pi结果
+#cat *_pi.sites.pi > all_breeds_pi_results.txt
+# 合并频率结果
+#cat *_freq.frq > all_breeds_freq_results.txt
+
+echo "Results merged into all_breeds_pi_results.txt and all_breeds_freq_results.txt"
