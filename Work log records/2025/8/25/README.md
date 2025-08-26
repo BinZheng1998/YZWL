@@ -1,7 +1,9 @@
 # 20250825
 
 #修改下载的cds文件名 
-```find . -name "*cds_from_genomic.fna*" -exec rename 's/cds_from_genomic\.fna/cds.fa/' {} \; ```
+```
+find . -name "*cds_from_genomic.fna*" -exec rename 's/cds_from_genomic\.fna/cds.fa/' {} \;
+```
 
 *************************************************************
 #提取features表、蛋白质序列文件绝对路径和物种名的对应关系 
