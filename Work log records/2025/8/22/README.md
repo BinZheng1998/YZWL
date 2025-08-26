@@ -1,6 +1,7 @@
 计算每个鸡品种的pi（核苷酸多样性）和af（等位基因频率） 
 输入格式如下： 
 |ERR5036062.raw.snps.indels.g.vcf    |    Afghan_Native|
+|---|---|
 ERR5036066.raw.snps.indels.g.vcf        Afghan_Native
 ERR5036075.raw.snps.indels.g.vcf        Afghan_Native
 SRR23815971_WGS_of_Gallus_gallus.raw.snps.indels.g.vcf  Baier
