@@ -1,0 +1,10 @@
+iqtree2 \
+  -s concatnated.out \
+  -p partition.txt \
+  -m MFP+MERGE \
+  -mset LG,JTT,WAG \
+  -mrate G,C20,C60 \
+  -ufboot 1000 \
+  --bnni \
+  -T 48 \
+  -pre concatenate
