@@ -246,23 +246,26 @@ df_stacked_signed <- df_stacked %>%
     Y_scaled = Y_plot * scaling_factor
   )
 
+right_axis_breaks_visual <- c(-10, -5, 0, 5, 10) 
+right_axis_labels_visual <- c("10", "5", "0", "5", "10")
+primary_axis_breaks_for_sec <- right_axis_breaks_visual * scaling_factor
 
-p_dual_axis_smooth_fill <- ggplot(Fst_pos, aes(x = BPcum, y = Log10P)) +
-  geom_point(aes(color = color_group), size = 0.5) +
+
+p <- ggplot(Fst_pos, aes(x = BPcum, y = Log10P)) +
+  geom_point(aes(color = color_group), size = 0.75) +
   scale_color_manual(values = color_values) +
-  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
   stat_smooth(
     data = df_stacked_signed %>% filter(Method == "pos"),
     aes(x = X_Position, y = Y_scaled, # 定义X和Y
         ymin = 0,                     # 阴影从0开始
         ymax = after_stat(y)),        # 阴影到平滑后的Y值
     geom = "ribbon",                  # 使用 ribbon 几何对象
-    fill = "grey80",                    # 填充颜色
-    alpha = 0.25,                      # 透明度
+    fill = "grey50",                    # 填充颜色
+    alpha = 0.2,                      # 透明度
     se = FALSE,                       # 不显示置信区间的阴影
     inherit.aes = FALSE,
     method = "loess",                 # 平滑方法
-    span = 0.1,                       # 平滑程度 (可调整)
+    span = 0.2,                       # 平滑程度 (可调整)
     color = "white",               # 轮廓线颜色
     linewidth = 0.8                   # 轮廓线粗细
   ) +
@@ -273,17 +276,34 @@ p_dual_axis_smooth_fill <- ggplot(Fst_pos, aes(x = BPcum, y = Log10P)) +
         ymin = after_stat(y),         # 阴影从平滑后的Y值开始
         ymax = 0),                    # 阴影到0结束
     geom = "ribbon",
-    fill = "grey80",
-    alpha = 0.25,
+    fill = "grey50",
+    alpha = 0.2,
     se = FALSE,
     inherit.aes = FALSE,
     method = "loess",
-    span = 0.1,
+    span = 0.2,
     color = "white",
     linewidth = 0.8
   ) +
   scale_x_continuous(label = X_axis$CHR, breaks = X_axis$BPcum, expand = expansion(mult = c(0, 0))) +
-  
+   
+  geom_hline(yintercept = 0, color = "black", linewidth = 1) +
+  theme_bw()+
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(size = 20, color = "black"),
+    axis.title = element_text(size = 20),
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y.right = element_text(color = "black"),
+    axis.text.y.right = element_text(color = "black"),
+    legend.position = "none",
+    axis.line = element_blank(),
+    panel.border = element_rect(color = "black", linewidth = 1, fill = NA),
+    axis.ticks.y = element_line(linewidth = 1, color = "black"))+
+  xlab("")+
   scale_y_continuous(
     name = "DCMS",
     limits = c(-21, 21), 
@@ -291,27 +311,12 @@ p_dual_axis_smooth_fill <- ggplot(Fst_pos, aes(x = BPcum, y = Log10P)) +
     labels = c("20","15","10", "5","0", "5", "10", "15", "20"),
     sec.axis = sec_axis(
       trans = ~ . / scaling_factor, 
-      name = "Proportion (%)"
+      name = "Proportion (%)",
+      breaks = c(-10,-5,0,5,10), # 告诉它在哪里画刻度
+      labels = right_axis_labels_visual     # 告诉它刻度显示什么
     )
-  ) +
-  theme_bw()+
-  theme(
-    panel.grid.major = element_blank(),
-    axis.text = element_text(size = 20, color = "black"),
-    axis.title.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.line.x = element_blank(),
-    axis.title = element_text(size = 20),
-    axis.line = element_line(linewidth = 0.5),
-    axis.ticks = element_line(linewidth = 0.5),
-    legend.position = "none",
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    axis.title.y.right = element_text(color = "black"),
-    axis.text.y.right = element_text(color = "black")
-  ) +
-  xlab("")
+  )
 
-# --- 6. 打印最终图形 ---
-print(p_dual_axis_smooth_fill)
+p
+
+ggsave('sheep_BW_manhattan.pdf',p,width = 24,height = 8)
