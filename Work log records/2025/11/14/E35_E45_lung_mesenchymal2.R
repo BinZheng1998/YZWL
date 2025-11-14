@@ -102,7 +102,7 @@ p1 <- plot_cells(cds, reduction_method="UMAP", color_cells_by="celltype_gut") + 
 p1
 
 cds.embed <- cds@int_colData$reducedDims$UMAP
-int.embed <- Embeddings(obj_sub, reduction = "umap")
+int.embed <- Embeddings(obj_sub1, reduction = "umap")
 int.embed <- int.embed[rownames(cds.embed),]
 cds@int_colData$reducedDims$UMAP <- int.embed
 p2 <- plot_cells(cds, reduction_method="UMAP", color_cells_by="celltype_gut") + ggtitle('int.umap')
@@ -122,9 +122,9 @@ p = plot_cells(cds, label_groups_by_cluster = FALSE, label_leaves = FALSE,
 p
 
 
-p + geom_vline(xintercept = seq(-3.5,-1.5,0.5)) + geom_hline(yintercept = seq(-3.8,-2,0.5))
-embed <- data.frame(Embeddings(obj_sub, reduction = "umap"))
-embed <- subset(embed, umap_1 > -3.5 & umap_1 < -2 & umap_2 > -3.8 & umap_2 < -2)
+p + geom_vline(xintercept = seq(2.5,4.5,0.5)) + geom_hline(yintercept = seq(-3.5,0,0.5))
+embed <- data.frame(Embeddings(obj_sub1, reduction = "umap"))
+embed <- subset(embed, umap_1 > 2.5 & umap_1 < 4.5 & umap_2 > -3.5 & umap_2 < 0)
 root.cell <- rownames(embed)
 cds <- order_cells(cds, root_cells = root.cell)
 #pdf('E35_E45_lung_main_bronchi_monocle3_pseudotime_umap.pdf',width = 7, height = 5)
@@ -141,19 +141,28 @@ plot_cells(cds, color_cells_by = "pseudotime", label_cell_groups = FALSE,
 
 
 Track_genes <- graph_test(cds, neighbor_graph="principal_graph", cores=20)
-Track_genes_sig <- Track_genes %>% top_n(n=20, morans_I) %>%
+Track_genes_sig <- Track_genes %>% top_n(n=30, morans_I) %>%
   pull(gene_short_name) %>% as.character()
 
 #pdf('E35_E45_lung_main_bronchi_monocle3_top30Genes.pdf',width = 12,height = 8)
-plot_genes_in_pseudotime(cds[Track_genes_sig,],color_cells_by = "Stage",min_expr=0.5, ncol = 5)+ 
+plot_genes_in_pseudotime(cds[Track_genes_sig,],color_cells_by = "pseudotime",min_expr=0.5, ncol = 5)+ 
   theme_classic()+
   theme(
         #axis.line = element_line(linewidth = 1),
         axis.text = element_text(size=12),
         axis.title = element_text(size=14))
-dev.off()
+#dev.off()
 
 FeaturePlot(obj_sub,features = c('DUSP6','HAPLN1','FAM237A','PTN','AGR2','TNC'))
 head(obj_sub)
 DimPlot(obj_sub,group.by = 'Stage',label = T)
 FeaturePlot(obj_sub,features = c('SOX9'))
+
+library(ClusterGVis)
+genes <- row.names(subset(Track_genes, q_value == 0 & morans_I > 0.25))
+pre_pseudotime_matrix <- getFromNamespace("pre_pseudotime_matrix","ClusterGVis")
+mat <- pre_pseudotime_matrix(cds_obj = cds,
+                             gene_list = genes)
+ck <- clusterData(obj = mat,
+                  cluster.method = "kmeans",
+                  cluster.num = 5)
