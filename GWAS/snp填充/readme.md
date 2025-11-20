@@ -64,6 +64,8 @@ bcftools norm -d snps pig_DP4_2allele_0.05miss_0.01maf_snps.vcf.gz -Oz -o pig_DP
 ```
 
 # part3
+#填充snps
+
 ```bash
 bash beagle_parallel.sh input.vcf.gz input_sample.txt
 ```
