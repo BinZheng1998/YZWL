@@ -62,3 +62,8 @@ bcftools annotate --remove QUAL,FILTER,INFO,^FORMAT/GT snp.pass.vcf.gz -Oz -o sn
 ```bash
 bcftools norm -d snps pig_DP4_2allele_0.05miss_0.01maf_snps.vcf.gz -Oz -o pig_DP4_2allele_0.05miss_0.01maf_snps_rmdup.vcf.gz
 ```
+
+# part3
+```bash
+bash beagle_parallel.sh input.vcf.gz input_sample.txt
+```
