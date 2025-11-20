@@ -8,29 +8,29 @@ awk '{a[$2] = a[$2] ? a[$2] "," $1 : $1} END {for (i in a) print i, a[i]}' cattl
 
 #原始格式：
 
-ACKR000001      Cocker-Spaniel
-ACKR000002      Cocker-Spaniel
-ACKR000003      Cocker-Spaniel
-AESK000001      American-Eskimo-Dog
-AESK000002      American-Eskimo-Dog
-AESK000003      American-Eskimo-Dog
-AESK000004      American-Eskimo-Dog
-AESK000005      American-Eskimo-Dog
-AESK000006      American-Eskimo-Dog
-AFFN000001      Affenpinscher
-AFFN000002      Affenpinscher
-AFFN000003      Affenpinscher
-AFFN000004      Affenpinscher
-AFFN000005      Affenpinscher
-AFFN000006      Affenpinscher
-AFGH000001      Afghan-Hound
-AFOX000001      American-Foxhound
-AFOX000002      American-Foxhound
-AFOX000003      American-Foxhound
-AFOX000004      American-Foxhound
-AFOX000005      American-Foxhound
-AFOX000006      American-Foxhound
-AFOX000007      American-Foxhound
+ACKR000001      Cocker-Spaniel  
+ACKR000002      Cocker-Spaniel  
+ACKR000003      Cocker-Spaniel  
+AESK000001      American-Eskimo-Dog  
+AESK000002      American-Eskimo-Dog  
+AESK000003      American-Eskimo-Dog  
+AESK000004      American-Eskimo-Dog  
+AESK000005      American-Eskimo-Dog  
+AESK000006      American-Eskimo-Dog  
+AFFN000001      Affenpinscher  
+AFFN000002      Affenpinscher  
+AFFN000003      Affenpinscher  
+AFFN000004      Affenpinscher  
+AFFN000005      Affenpinscher  
+AFFN000006      Affenpinscher  
+AFGH000001      Afghan-Hound  
+AFOX000001      American-Foxhound  
+AFOX000002      American-Foxhound  
+AFOX000003      American-Foxhound  
+AFOX000004      American-Foxhound  
+AFOX000005      American-Foxhound  
+AFOX000006      American-Foxhound  
+AFOX000007      American-Foxhound  
 
 #修改后的：
 
