@@ -8,7 +8,7 @@ input data:featureCounts_tab.txt
 
 # other method
 # get_tpm.py  
-## Program:featureCounts v2.0.6; Command:"featureCounts" "-a" "/home/bzheng/project/04_rnaseq/chicken/01_ref/rnaseq_ref/20250529_chicken.gtf" "-o" "/home/>Geneid  Chr     Start   End     Strand  Length  /home/bzheng/project/04_rnaseq/chicken/03_bam/SRR10672453_aligned_sorted.bam  
+Program:featureCounts v2.0.6; Command:"featureCounts" "-a" "/home/bzheng/project/04_rnaseq/chicken/01_ref/rnaseq_ref/20250529_chicken.gtf" "-o" "/home/>Geneid  Chr     Start   End     Strand  Length  /home/bzheng/project/04_rnaseq/chicken/03_bam/SRR10672453_aligned_sorted.bam  
 LOC124418406    chr1;chr1;chr1  7606;11994;13409        10761;12145;13443       -;-;-   3343    0  
 LOC121106832    chr1;chr1;chr1  25663;25989;27409       25725;26819;28557       +;+;+   2043    0  
 LOC107049418    chr1;chr1;chr1;chr1;chr1        32471;32471;33116;34388;34388   33211;32542;33211;34687;34687   +;+;+;+;+       1041    15  
