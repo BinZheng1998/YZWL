@@ -112,7 +112,6 @@ for SAMPLE in "${SAMPLES[@]}"; do
         echo "[3/4] Calling peaks with MACS3..."
         macs3 callpeak \
             -t ${BAM_FINAL} \
-            -f BAMPE \
             -n ${SAMPLE} \
             -g ${GENOME_SIZE} \
             --outdir ${DIR_PEAKS} \
