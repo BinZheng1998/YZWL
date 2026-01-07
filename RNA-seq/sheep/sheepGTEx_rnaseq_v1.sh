@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# RNA-seq Analysis Pipeline (Cattle Data) - Fastp Custom Params Version
+# RNA-seq Analysis Pipeline (Sheep Data) - Fastp Custom Params Version
 # 功能: 
 #   1. 自动处理 SE/PE 数据 (支持 .fastq.gz/.fq.gz)
 #   2. Fastp (自定义剪切参数) -> STAR -> StringTie -> featureCounts
