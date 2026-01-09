@@ -60,7 +60,16 @@ obj_sub[["Spatial"]] <- JoinLayers(obj_sub[["Spatial"]])
 obj_sub <- FindNeighbors(obj_sub, reduction = "integrated.harmony", dims = 1:30)
 obj_sub <- FindClusters(obj_sub, resolution = 1)
 obj_sub <- RunUMAP(obj_sub, reduction = 'integrated.harmony', dims = 1:30, return.model = T, verbose = F)
-p1<-DimPlot(obj_sub,group.by = 'celltype',label = T,label.size = 5)+ 
+
+library(ggsci)
+library(scales)
+show_col(pal_npg("nrc")(10))
+my_colors <- c(
+  "E25 Lung Epithelium"  = "#E64b35ff",  # 红色
+  "Distal Epithelium"  = "#4dbbd5ff",  # 蓝色
+  "Proximal Epithelium" = "#00a087ff"   # 绿色
+)
+p1<-DimPlot(obj_sub,group.by = 'celltype',label = T,label.size = 5,cols = my_colors)+ 
     labs(x = '',y='UMAP2',title = '')+
   theme_classic()+
   theme(axis.ticks = element_blank(),
@@ -205,4 +214,107 @@ p
 library(patchwork)
 pdf('E25_E35_lung_epithelium_monocle3_pseudotime_umap.pdf',width = 10, height = 14)
 p / (p5 / p6) + plot_layout(heights = c(1.75, 1.25))
+dev.off()
+
+
+
+Track_genes <- graph_test(cds, neighbor_graph="principal_graph", cores=20)
+#write.table(Track_genes,'E45_lung_mesenchymal_monocle3_res.txt',sep = '\t')
+Track_genes_sig <- Track_genes %>% top_n(n=30, morans_I) %>%
+  pull(gene_short_name) %>% as.character()
+Track_genes_sig1 <- c('HBA1','HBBR','HBZ','HBE','HBAD')
+pdf('E25_E35_HBZ_HBAD_HBE_HBBR_HBA1_monocle3_pseudotime_umap.pdf',width = 10, height = 3)
+p7<-plot_genes_in_pseudotime(cds_sub1[Track_genes_sig1,],color_cells_by = "pseudotime",min_expr=0.5, ncol = 5)+ 
+    labs(x='')+
+  theme_classic()+
+  theme(
+        #axis.line = element_line(linewidth = 1),
+        axis.text = element_text(size=12),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title = element_text(size=15))+NoLegend()
+p7
+dev.off()
+
+####GO
+library(clusterProfiler)
+library(org.Gg.eg.db)
+
+genes1 <- Track_genes1 %>% top_n(n=50, morans_I) %>%
+  pull(gene_short_name) %>% as.character()
+eg <- bitr(genes1, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = "org.Gg.eg.db")
+id <- as.character(eg[, 2])
+ego <- enrichGO(gene = id, OrgDb = "org.Gg.eg.db", ont = "all",
+                pAdjustMethod = "BH", pvalueCutoff = 1, qvalueCutoff = 1,
+                readable = TRUE)
+ego1 <- as.data.frame(ego)
+ego1 <- ego1[ego1$pvalue < 0.05,]
+top20_pvalue1 <- ego1 %>%
+  arrange(pvalue) %>%  # 按pvalue升序排列（最小的pvalue最显著）
+  head(20)
+head(top20_pvalue1)
+#top20_pvalue$Description <- str_to_title(top20_pvalue$Description)
+
+pdf('E25_to_Distal_monocle3_GO_top20.pdf',width = 7,height = 8)
+p_1<-ggplot(top20_pvalue1, 
+       aes(x = -log10(pvalue),
+           y = reorder(Description, -log10(pvalue)), 
+           fill = RichFactor)) +
+  geom_bar(stat = 'identity', width = 0.8) +
+  scale_x_continuous(expand = c(0,0))+
+  scale_fill_gradient(low = "#E8ECF1",  # 这是一个很浅的蓝灰色，比纯白更有质感
+                      high = "#4dbbd5ff") + 
+  
+  geom_text(aes(label = Description, x = 0), 
+            hjust = 0, nudge_x = 0.1, size = 5, 
+            color = "black") + #以此深蓝为底色时，文字建议改白色，或者根据实际情况改黑色
+            
+  theme_classic() +
+  labs(y = '', x = expression(-log[10](italic(P)-value))) +
+  theme(axis.text = element_text(size=12),
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank())
+p_1
+dev.off()
+
+
+genes2 <- Track_genes2 %>% top_n(n=50, morans_I) %>%
+  pull(gene_short_name) %>% as.character()
+eg <- bitr(genes2, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = "org.Gg.eg.db")
+id <- as.character(eg[, 2])
+ego <- enrichGO(gene = id, OrgDb = "org.Gg.eg.db", ont = "all",
+                pAdjustMethod = "BH", pvalueCutoff = 1, qvalueCutoff = 1,
+                readable = TRUE)
+ego2 <- as.data.frame(ego)
+ego2 <- ego2[ego2$pvalue < 0.05,]
+
+top20_pvalue2 <- ego2 %>%
+  arrange(pvalue) %>%  # 按pvalue升序排列（最小的pvalue最显著）
+  head(20)
+head(top20_pvalue2)
+#top20_pvalue$Description <- str_to_title(top20_pvalue$Description)
+
+pdf('E25_to_Proximal_monocle3_GO_top20.pdf',width = 7,height = 8)
+p_2<- ggplot(top20_pvalue2, 
+       aes(x = -log10(pvalue),
+           y = reorder(Description, -log10(pvalue)), 
+           fill = RichFactor)) +
+  geom_bar(stat = 'identity', width = 0.8) +
+  scale_x_continuous(expand = c(0,0))+
+  scale_fill_gradient(low = "#E8ECF1",  # 这是一个很浅的蓝灰色，比纯白更有质感
+                      high = "#00a087ff") + 
+  
+  geom_text(aes(label = Description, x = 0), 
+            hjust = 0, nudge_x = 0.1, size = 5, 
+            color = "black") + #以此深蓝为底色时，文字建议改白色，或者根据实际情况改黑色
+            
+  theme_classic() +
+  labs(y = '', x = expression(-log[10](italic(P)-value))) +
+  theme(axis.text = element_text(size=12),
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank())
+p_2
+dev.off()
+
+pdf('E25_to_E35_monocle3_GO_top20.pdf',width = 14,height = 8)
+p_1+p_2
 dev.off()
