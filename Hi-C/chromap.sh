@@ -17,14 +17,11 @@ pairtools dedup CRR1137296.chromap_sorted.pairs --max-mismatch 1 --method max --
 
 #4
 bgzip -@ 8 CRR1137296.chromap_sorted_nodups.pairs
+~/software/pairix/bin/pairix CRR1137296.chromap_sorted_nodups.pairs.gz
+cooler cload pairix ../chicken.chrom.sizes:500000 CRR1137296.chromap_sorted_nodups.pairs.gz  CRR1137296_chromap_500k.cool
+
+#4 or not index
+cooler cload pairs ../chicken.chrom.sizes:500000 CRR1137296.chromap_sorted_nodups.pairs CRR1137304_chromap.cool -c1 2 -p1 3 -c2 4 -p2 5
 
 #5
-~/software/pairix/bin/pairix CRR1137296.chromap_sorted_nodups.pairs.gz
-
-#6
-cooler cload pairix ../chicken.chrom.sizes:500000 CRR1137296.chromap_sorted_nodups.pairs.gz  CRR1137296_chromap_500k.cool
-#or not index
-cooler cload pairs ../chicken.chrom.sizes:500000 CRR1137304_chromap.pairs CRR1137304_chromap.cool -c1 2 -p1 3 -c2 4 -p2 5
-
-#7
 cooler zoomify --nproc 25 --balance CRR1137304_chromap.cool --out CRR1137304_chromap.mcool
