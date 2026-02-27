@@ -11,10 +11,11 @@
   -1 SRR28164016_1.clean.fastq.gz \
   -2 SRR28164016_2.clean.fastq.gz \
   --pairs \
-  -o SRR28164016.pairs.gz
+  -o SRR28164016.pairs
 
 # 2. 建立索引 (pairix)
 # 虽然 chromap 输出了 pairs，但 cooler cload pairix 模式需要这个索引来提速
+bgzip -@ 24 SRR28164016.pairs
 ~/software/pairix/bin/pairix SRR28164016.pairs.gz
 
 # 3. 生成高分辨率 Cooler 文件 (以 5kb 为起始)
