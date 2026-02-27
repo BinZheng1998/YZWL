@@ -18,14 +18,14 @@ pairtools sort SRR28164016_nodups.pairs --nproc 22 --memory 128G --nproc-in 22 -
 
 # 3. 建立索引 (pairix)
 # 虽然 chromap 输出了 pairs，但 cooler cload pairix 模式需要这个索引来提速
-bgzip -@ 24 SRR28164016.pairs
-~/software/pairix/bin/pairix SRR28164016.pairs.gz
+bgzip -@ 24 SRR28164016_sorted_nodups.pairs
+~/software/pairix/bin/pairix SRR28164016_sorted_nodups.pairs.gz
 
 # 4. 生成高分辨率 Cooler 文件 (以 5kb 为起始)
 # 只有起始分辨率够高，后面的 zoomify 才有意义
 cooler cload pairix \
   ../chicken.chrom.sizes:5000 \
-  SRR28164016.pairs.gz \
+  SRR28164016_sorted_nodups.pairs.gz \
   SRR28164016_5k.cool
 
 # 5. 生成多分辨率矩阵并自动归一化 (Balance)
