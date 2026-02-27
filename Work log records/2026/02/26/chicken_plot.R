@@ -98,30 +98,49 @@ plot_selection_signals <- function(gene_name, chrom, start, end, flank = 250000)
 
 library(rtracklayer)
 library(dplyr)
-get_gene_coords_from_gtf <- function(gtf_path, target_ids) {
-  message("Loading GTF file... this may take a minute.")
-  gtf_data <- import(gtf_path)
-  genes_df <- as.data.frame(gtf_data) %>%
-    filter(type == "gene") %>%
-    filter(gene_id %in% target_ids | gene_name %in% target_ids) %>% # 同时兼容 ID 和 Name
-    select(name = gene_name, chr = seqnames, s = start, e = end) %>%
-    mutate(chr = ifelse(startsWith(as.character(chr), "chr"), 
-                        as.character(chr), 
-                        paste0("chr", chr)))
-  genes_list <- split(genes_df, seq(nrow(genes_df)))
-  genes_list <- lapply(genes_list, as.list)
+get_gene_coords <- function(anno_path, target_ids) {
+  message("Loading annotation file...")
   
-  return(genes_list)
+  # rtracklayer 会根据后缀自动识别 GFF 或 GTF
+  anno_data <- import(anno_path)
+  anno_df <- as.data.frame(anno_data)
+  
+  # 兼容性处理列名
+  # GFF3 常用 'ID' 和 'Name'，GTF 常用 'gene_id' 和 'gene_name'
+  colnames(anno_df) <- gsub("gene_id", "ID", colnames(anno_df))
+  colnames(anno_df) <- gsub("gene_name", "Name", colnames(anno_df))
+  
+  res_df <- anno_df %>%
+    filter(type == "gene") %>%
+    # 查找 ID 列或 Name 列（不区分大小写更稳妥）
+    filter(ID %in% target_ids | Name %in% target_ids) %>%
+    mutate(
+      # 确保有名字显示
+      final_name = coalesce(as.character(Name), as.character(ID)),
+      # 染色体前缀统一化
+      seqnames = as.character(seqnames),
+      chr = if_else(grepl("^chr", seqnames, ignore.case = TRUE), 
+                    seqnames, 
+                    paste0("chr", seqnames))
+    ) %>%
+    select(name = final_name, chr, s = start, e = end) %>%
+    distinct(name, .keep_all = TRUE)
+  
+  if (nrow(res_df) == 0) {
+    warning("No genes found. Check if target_ids match the 'ID' or 'Name' field in your file.")
+  }
+  
+  return(split(res_df, seq(nrow(res_df))) %>% lapply(as.list))
 }
 
-gtf_file <- "~/ref/huxu_v23_ref/20250514_final_ref/20250529_chicken.gtf" # 替换为你的 GTF 路径
+gff_gtf_file <- "~/ref/huxu_v23_ref/20250514_final_ref/20250529_chicken.gtf" # 替换为你的 GTF/GFF 路径
 
 my_target_genes <- c("SOX5", "IGF1", "LCORL", "ADAMTS17", "BRCA1","CACNA1D","CACNA2D3","CCSER1","ELP4","FHIT","FMNL2",
                       "FNDC3B","LPP","LRRC7","MAGI2","MECOM","METTL15P1","NPAS3","OSBPL9","PAX6",
                     "R3HDM2","RBFOX1","RORA","RUNDC3B","SEMA3C","SEMA3D","SLC4A10","SLCO1A2","SORD","LOC107050760","SUPT3H",
                   "THSD7A","TOX","UNC13C","ZBTB20","ZMIZ1")
 
-genes_to_plot <- get_gene_coords_from_gtf(gtf_file, my_target_genes)
+genes_to_plot <- get_gene_coords(gff_gtf_file, my_target_genes)
 
 for (g in genes_to_plot) {
   p <- plot_selection_signals(g$name, g$chr, g$s, g$e)
