@@ -45,8 +45,10 @@ WINDOWS=("5000:2500" "10000:5000" "20000:10000" "50000:25000")
 for WIN_SET in "${WINDOWS[@]}"; do
     SIZE=$(echo $WIN_SET | cut -d: -f1)
     STEP=$(echo $WIN_SET | cut -d: -f2)
-    #TAG="${SIZE/000/k}window_${STEP/000/k}step"
-    TAG="$((SIZE/1000))kwindow_$((STEP/1000))kstep"
+    TAG_SIZE=$(awk "BEGIN {print $SIZE/1000}")
+    TAG_STEP=$(awk "BEGIN {print $STEP/1000}")
+    TAG="${TAG_SIZE}kwindow_${TAG_STEP}kstep"
+   #TAG="$((SIZE/1000))kwindow_$((STEP/1000))kstep"
 
     echo "===================================================="
     echo "物种: $SPECIES | 正在计算: [$TAG] 窗口"
@@ -72,7 +74,8 @@ done
 
 # 4. 计算全位点等位基因频率
 echo ">>> 正在计算 ${SPECIES} 的全位点等位基因频率..."
-vcftools --gzvcf "$VCF" --freq2 --out "./${OUT_PREFIX}_AlleleFreq"
+vcftools --gzvcf "$VCF" --freq --keep "$POP1" --out "./${OUT_PREFIX}_Pop1_highBW_AlleleFreq"
+vcftools --gzvcf "$VCF" --freq --keep "$POP2" --out "./${OUT_PREFIX}_Pop2_lowBW_AlleleFreq"
 
 echo "===================================================="
 echo "任务完成！"
